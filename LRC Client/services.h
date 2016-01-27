@@ -1,6 +1,6 @@
 #pragma once
 
-// Services
+// Service toggle
 #define KEYBOARD_SERVICE true
 #define MOUSE_SERVICE true
 #define CRIPBOARD_SERVICE true
