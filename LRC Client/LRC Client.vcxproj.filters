@@ -18,9 +18,15 @@
     <ClCompile Include="LRC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="keylogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="defines.h">
+    <ClInclude Include="services.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="keylogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

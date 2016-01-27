@@ -1,6 +1,4 @@
 #pragma once
-// Main settings
-#define DEBUG true
 
 // Keylogger settings
 #define KEYLOGGER_ENABLED true

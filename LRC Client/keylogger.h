@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <list>
+#include <fstream>
 
 namespace services
 {
@@ -14,26 +15,31 @@ namespace services
 		} VirtualKeyInfo;
 		typedef std::list<VirtualKeyInfo> VirtualKeyInfoList;
 
-		bool isRunning = false;
+#if _DEBUG
+		static std::ofstream log;
+#endif
 
-		unsigned int vkRepeats;
-		int vkListCursor;
-		VirtualKeyInfoList vkList;
-		VirtualKeyInfo lastKeyPressed;
+		static bool isRunning = false;
 
-		HHOOK hhkLowLevelKybd = NULL;
-		HHOOK hhkLowLevelMouse = NULL;
+		static size_t vkRepeats;
+		static size_t vkListCursor;
+		static VirtualKeyInfoList vkList;
+		static VirtualKeyInfo lastKeyPressed;
+
+		static HHOOK hhkLowLevelKybd = NULL;
+		static HHOOK hhkLowLevelMouse = NULL;
 
 		LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 		LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 
-		bool run();
-		bool stop();
-		void processVirtualKey(VirtualKeyInfo vkInfo);
+		void run();
+		void stop();
+		void processvk(VirtualKeyInfo vkInfo);
 		void onDelete();
 		void onBackspace();
 		void clear();
 
+		inline bool isprintable(DWORD vkCode);
 		inline bool vkcmp(VirtualKeyInfo vk1, VirtualKeyInfo vk2);
 	}
 }
