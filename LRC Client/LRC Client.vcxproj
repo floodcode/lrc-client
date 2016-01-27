@@ -125,12 +125,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="keylogger.cpp" />
+    <ClCompile Include="clipboard.cpp" />
+    <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="LRC.cpp" />
+    <ClCompile Include="mouse.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="clipboard.h" />
+    <ClInclude Include="mouse.h" />
     <ClInclude Include="services.h" />
-    <ClInclude Include="keylogger.h" />
+    <ClInclude Include="keyboard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

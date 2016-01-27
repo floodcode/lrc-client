@@ -1,11 +1,13 @@
 #pragma once
 #include <Windows.h>
 #include <list>
+#if _DEBUG
 #include <fstream>
+#endif
 
 namespace services
 {
-	namespace keylogger
+	namespace keyboard
 	{
 		typedef struct
 		{
@@ -27,10 +29,8 @@ namespace services
 		static VirtualKeyInfo lastKeyPressed;
 
 		static HHOOK hhkLowLevelKybd = NULL;
-		static HHOOK hhkLowLevelMouse = NULL;
 
 		LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
-		LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 
 		void run();
 		void stop();
