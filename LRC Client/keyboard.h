@@ -1,6 +1,8 @@
 #pragma once
 #include <Windows.h>
+#include <thread>
 #include <list>
+#include <queue>
 #if _DEBUG
 #include <fstream>
 #endif
@@ -16,7 +18,9 @@ namespace services
 			WORD flags;
 		} VirtualKeyInfo;
 		typedef std::list<VirtualKeyInfo> VirtualKeyInfoList;
+		typedef std::queue<VirtualKeyInfo> VirtualKeyInfoQueue;
 
+		static std::thread vkQueueThread;
 #if _DEBUG
 		static std::ofstream log;
 #endif
@@ -26,6 +30,7 @@ namespace services
 		static size_t vkRepeats;
 		static size_t vkListCursor;
 		static VirtualKeyInfoList vkList;
+		static VirtualKeyInfoQueue vkQueue;
 		static VirtualKeyInfo lastKeyPressed;
 
 		static HHOOK hhkLowLevelKybd = NULL;
@@ -34,6 +39,7 @@ namespace services
 
 		void run();
 		void stop();
+		void processqueue();
 		void processvk(VirtualKeyInfo vkInfo);
 		void onDelete();
 		void onBackspace();

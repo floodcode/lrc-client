@@ -7,6 +7,8 @@ void services::keyboard::run()
 	{
 		return;
 	}
+	clear();
+	isRunning = true;
 #if _DEBUG
 	log = std::ofstream("LRClog.txt", std::ios::trunc);
 #endif
@@ -15,8 +17,7 @@ void services::keyboard::run()
 		hhkLowLevelKybd = SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, NULL);
 	}
 
-	clear();
-	isRunning = true;
+	vkQueueThread = std::thread(processqueue);
 }
 
 void services::keyboard::stop()
@@ -26,6 +27,8 @@ void services::keyboard::stop()
 		return;
 	}
 
+	isRunning = false;
+
 	if (hhkLowLevelKybd != NULL)
 	{
 		UnhookWindowsHookEx(hhkLowLevelKybd);
@@ -34,7 +37,54 @@ void services::keyboard::stop()
 #if _DEBUG
 	log.close();
 #endif
-	isRunning = false;
+}
+
+
+void services::keyboard::processqueue()
+{
+	while (isRunning)
+	{
+		if (!vkQueue.empty())
+		{
+			VirtualKeyInfo vkInfo = vkQueue.front();
+			vkQueue.pop();
+
+			switch (vkInfo.vkCode)
+			{
+			case VK_BACK:
+				onBackspace();
+				break;
+			case VK_DELETE:
+				onDelete();
+				break;
+			case VK_UP:
+				// Point cursor to the start
+				vkListCursor = 0;
+				break;
+			case VK_DOWN:
+				// Point cursor to the end
+				vkListCursor = vkList.size();
+				break;
+			case VK_LEFT:
+				// Shift virtual-key cursor to left if cursor isn't at begining
+				if (vkListCursor > 0)
+				{
+					vkListCursor--;
+				}
+				break;
+			case VK_RIGHT:
+				// Shift virtual-key cursor to right if cursor isn't at end
+				if (vkListCursor < vkList.size())
+				{
+					vkListCursor++;
+				}
+				break;
+			}
+
+			processvk(vkInfo);
+		}
+		Sleep(50);
+	}
 }
 
 LRESULT CALLBACK services::keyboard::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -43,47 +93,15 @@ LRESULT CALLBACK services::keyboard::LowLevelKeyboardProc(int nCode, WPARAM wPar
 	{
 		KBDLLHOOKSTRUCT* dllHookStruct = (KBDLLHOOKSTRUCT*)lParam;
 
-		switch (dllHookStruct->vkCode)
-		{
-		case VK_BACK:
-			onBackspace();
-			break;
-		case VK_DELETE:
-			onDelete();
-			break;
-		case VK_UP:
-			// Point cursor to the start
-			vkListCursor = 0;
-			break;
-		case VK_DOWN:
-			// Point cursor to the end
-			vkListCursor = vkList.size() + 1;
-			break;
-		case VK_LEFT:
-			// Shift virtual-key cursor to left if cursor isn't at begining
-			if (vkListCursor > 0)
-			{
-				vkListCursor--;
-			}
-			break;
-		case VK_RIGHT:
-			// Shift virtual-key cursor to right if cursor isn't at end
-			if (vkListCursor < vkList.size())
-			{
-				vkListCursor++;
-			}
-			break;
-		}
-
 		bool isShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
 		bool isCapsLock = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
 
 		VirtualKeyInfo vkInfo;
 		vkInfo.vkCode = dllHookStruct->vkCode;
-		vkInfo.lang = *(WORD*)(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
+		vkInfo.lang = WORD(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
 		vkInfo.flags = isShift && isCapsLock ? 0x3 : isShift ? 0x1 : isCapsLock ? 0x2 : 0x0;
 
-		processvk(vkInfo);
+		vkQueue.push(vkInfo);
 	}
 
 	return CallNextHookEx(hhkLowLevelKybd, nCode, wParam, lParam);
@@ -118,6 +136,7 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 
 	if (isprintable(vkInfo.vkCode))
 	{
+		size_t sz = vkList.size();
 		VirtualKeyInfoList::iterator it = vkList.begin();
 		std::advance(vkList.begin(), vkListCursor);
 
