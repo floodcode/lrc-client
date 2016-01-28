@@ -1,4 +1,5 @@
 #include "services.h"
+#if MOUSE_SERVICE
 
 void services::mouse::run()
 {
@@ -41,12 +42,16 @@ LRESULT CALLBACK services::mouse::LowLevelMouseProc(int nCode, WPARAM wParam, LP
 		{
 		case WM_LBUTTONDOWN:
 			// Left mouse button down
+			GetLastError();
 			break;
 		case WM_RBUTTONDOWN:
 			// Right mouse button down
+			GetLastError();
 			break;
 		}
 	}
 
 	return CallNextHookEx(hhkLowLevelMouse, nCode, wParam, lParam);
 }
+
+#endif // MOUSE_SERVICE

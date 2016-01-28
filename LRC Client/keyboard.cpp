@@ -1,4 +1,5 @@
 #include "services.h"
+#if KEYBOARD_SERVICE
 
 void services::keyboard::run()
 {
@@ -7,11 +8,10 @@ void services::keyboard::run()
 	{
 		return;
 	}
-	clear();
+
 	isRunning = true;
-#if _DEBUG
-	log = std::ofstream("LRClog.txt", std::ios::trunc);
-#endif
+	clear();
+
 	if (hhkLowLevelKybd == NULL)
 	{
 		hhkLowLevelKybd = SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, NULL);
@@ -28,15 +28,13 @@ void services::keyboard::stop()
 	}
 
 	isRunning = false;
+	vkQueueThread.join();
 
 	if (hhkLowLevelKybd != NULL)
 	{
 		UnhookWindowsHookEx(hhkLowLevelKybd);
 		hhkLowLevelKybd = NULL;
 	}
-#if _DEBUG
-	log.close();
-#endif
 }
 
 
@@ -109,12 +107,6 @@ LRESULT CALLBACK services::keyboard::LowLevelKeyboardProc(int nCode, WPARAM wPar
 
 void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 {
-#if _DEBUG
-	log << "----------------" << std::endl;
-	log << "vkCode: " << vkInfo.vkCode << std::endl;
-	log << "lang: " << vkInfo.lang << std::endl;
-	log << "flags: " << vkInfo.flags << std::endl;
-#endif
 
 	// Filter virtual-key repeats
 	if (vkcmp(vkInfo, lastKeyPressed))
@@ -136,7 +128,6 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 
 	if (isprintable(vkInfo.vkCode))
 	{
-		size_t sz = vkList.size();
 		VirtualKeyInfoList::iterator it = vkList.begin();
 		std::advance(vkList.begin(), vkListCursor);
 
@@ -189,3 +180,5 @@ inline bool services::keyboard::isprintable(const DWORD vkCode)
 		|| (vkCode >= 0x30 && vkCode <= 0x5A) // 0 - 9, A - Z
 		|| (vkCode >= 0x60 && vkCode <= 0x6F);// Numpad keys
 }
+
+#endif // KEYBOARD_SERVICE

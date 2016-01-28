@@ -21,9 +21,6 @@ namespace services
 		typedef std::queue<VirtualKeyInfo> VirtualKeyInfoQueue;
 
 		static std::thread vkQueueThread;
-#if _DEBUG
-		static std::ofstream log;
-#endif
 
 		static bool isRunning = false;
 
