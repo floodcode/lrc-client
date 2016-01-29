@@ -126,12 +126,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="clipboard.cpp" />
+    <ClCompile Include="io.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="LRC.cpp" />
     <ClCompile Include="mouse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clipboard.h" />
+    <ClInclude Include="io.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="services.h" />
     <ClInclude Include="keyboard.h" />

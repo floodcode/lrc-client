@@ -5,9 +5,7 @@ namespace services
 {
 	namespace clipboard
 	{
-		static void clipboardmonitor()
-		{
-
-		}
+		void run();
+		void stop();
 	}
 }

