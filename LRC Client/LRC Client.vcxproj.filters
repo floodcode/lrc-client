@@ -30,21 +30,27 @@
     <ClCompile Include="io.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="services.h">
+    <ClInclude Include="clipboard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="clipboard.h">
+    <ClInclude Include="io.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="keyboard.h">
+    <ClInclude Include="keyboard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mouse.h">
+    <ClInclude Include="mouse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="io.h">
+    <ClInclude Include="services.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

