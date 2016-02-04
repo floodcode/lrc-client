@@ -4,9 +4,10 @@
 #define KEYBOARD_SERVICE	true
 #define MOUSE_SERVICE		true
 #define CLIPBOARD_SERVICE	true
+#define WEBSOCKET_SERVICE	true
 
-// Global settings
-#define SERVER_HOST "ws://localhost:8080"
+// WebSocket settings
+#define WEBSOCKET_HOST "ws://localhost:8080/"
 
 // Keyboard settings
 #define KEYBOARD_MAX_REPEATS 5
@@ -23,6 +24,9 @@
 #if CLIPBOARD_SERVICE
 #include "clipboard.hpp"
 #endif
+#if WEBSOCKET_SERVICE
+#include "websocket.hpp"
+#endif
 
 namespace services
 {
@@ -37,6 +41,9 @@ namespace services
 #if CLIPBOARD_SERVICE
 		clipboard::run();
 #endif
+#if WEBSOCKET_SERVICE
+		websocket::run();
+#endif
 	}
 
 	static void stopAll()
@@ -49,6 +56,9 @@ namespace services
 #endif
 #if CLIPBOARD_SERVICE
 		clipboard::stop();
+#endif
+#if WEBSOCKET_SERVICE
+		websocket::stop();
 #endif
 	}
 }

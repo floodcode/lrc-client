@@ -131,6 +131,7 @@
     <ClCompile Include="LRC.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="tools.cpp" />
+    <ClCompile Include="websocket.cpp" />
     <ClCompile Include="wsclient.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +141,8 @@
     <ClInclude Include="services.hpp" />
     <ClInclude Include="keyboard.hpp" />
     <ClInclude Include="tools.hpp" />
+    <ClInclude Include="websocket.hpp" />
+    <ClInclude Include="winfx.hpp" />
     <ClInclude Include="wsclient.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

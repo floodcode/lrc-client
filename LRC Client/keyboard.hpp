@@ -1,7 +1,7 @@
 #pragma once
 #include "tools.hpp"
 #include "io.hpp"
-#include <Windows.h>
+#include "winfx.hpp"
 #include <thread>
 #include <list>
 #include <queue>

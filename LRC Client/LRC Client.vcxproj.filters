@@ -36,6 +36,9 @@
     <ClCompile Include="wsclient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="websocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clipboard.hpp">
@@ -57,6 +60,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wsclient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="websocket.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="winfx.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
