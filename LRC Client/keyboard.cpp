@@ -113,7 +113,7 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 	// Filter virtual-key repeats
 	if (vkcmp(vkInfo, lastKeyPressed))
 	{
-		if (vkRepeats != KEYBOARD_MAX_REPEATS)
+		if (vkRepeats != KBD_MAX_REPEATS)
 		{
 			vkRepeats++;
 		}
@@ -138,7 +138,7 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 
 		vkEvents++;
 
-		if (vkEvents == KEYBOARD_KEYS_TO_SAVE)
+		if (vkEvents == KBD_KEYS_TO_SAVE)
 		{
 			save();
 		}

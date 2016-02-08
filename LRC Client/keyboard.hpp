@@ -25,7 +25,7 @@ namespace services
 		static std::thread vkQueueThread;
 
 		static bool isRunning = false;
-		const char dir[] = KEYBOARD_DIR;
+		const char dir[] = KBD_DIR;
 
 		static size_t vkEvents;
 		static size_t vkRepeats;

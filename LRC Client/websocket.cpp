@@ -10,6 +10,7 @@ void websocket::run()
 	}
 
 	isRunning = true;
+	jsonHelper.setId("fe6340be87fd5e43b7f0cac5741e76205dd69a68b2024fda16c696848a720f7a");
 	rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	wsWorkerThread = std::thread(worker);
 }
@@ -32,7 +33,7 @@ void websocket::worker()
 	{
 		if (tryconnect())
 		{
-			int a = 2;
+			send(jsonHelper.);
 			while (ws->getReadyState() != WebSocket::CLOSED)
 			{
 				ws->poll();
@@ -42,19 +43,26 @@ void websocket::worker()
 		}
 		else
 		{
-			Sleep(1000 * 10);
+			Sleep(1000 * WS_CONNECTION_DELAY_SEC);
 		}
 	}
 }
 
 void websocket::handlemessage(const std::string &message)
 {
-	int a = 2;
-	ws->send("Accepted!");
+	send(jsonHelper.getInfo("Data was accepted"));
+}
+
+
+void websocket::send(const std::string &message)
+{
+	wsSendMutex.lock();
+	ws->send(message);
+	wsSendMutex.unlock();
 }
 
 bool websocket::tryconnect()
 {
-	ws = WebSocket::from_url(WEBSOCKET_HOST);
+	ws = WebSocket::from_url(WS_HOST);
 	return ws != NULL;
 }
