@@ -60,7 +60,7 @@ PART
 
 ###### Clipboard (type - 0x2):
 ```
-CLIPBOARD
+PART
 {
   U32     time        // Time of copying in buffer
   WNDINFO wndInfo     // Information about window from where text was copied
