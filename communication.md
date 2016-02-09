@@ -2,7 +2,7 @@
 Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCDATA`.
 
 ## LRCDATA
-LRCDATA object
+`LRCDATA` object
 ```
 LRCDATA
 {
@@ -12,21 +12,21 @@ LRCDATA
 ```
 
 ## HEADER
-Header of LRCDATA object
+Header of `LRCDATA` object
 ```
 HEADER
 {
   U16     signature   // Signature of LRCDATA file (always should be 0x539)
   U8      version     // Version of LRCDATA file (current is 0x1)
   S8[64]  id          // Unique identifier of user
-  U8      type        // Type of contained data
-  U8      error       // Error code
+  U8      type        // Type of contained data (0x1 - 0x2)
+  U8      error       // Error code (0x0 if no error)
   U32     length      // Length of DATA block in bytes
 }
 ```
 
 ## DATA
-DATA block of LRCDATA object
+`DATA` block of `LRCDATA` object
 ```
 DATA
 {
