@@ -30,7 +30,7 @@ DATA block of LRCDATA object
 ```
 DATA
 {
-  U16     count       // Number of parts
+  U32     count       // Number of parts
   PART[]  parts       // Array of different data types
 }
 ```
