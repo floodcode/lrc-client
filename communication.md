@@ -75,7 +75,7 @@ VKINFO
 {
   U32     keyCode     // Virtual-Key code
   U16     lang        // Language code
-  U16     flags       // Caps Lock / Shift flags
+  U8      flags       // Caps Lock / Shift flags
 }
 ```
 
