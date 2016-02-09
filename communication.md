@@ -1,5 +1,5 @@
 # Communication between Client and Server
-Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCDATA`.
+Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCDATA`. All data blocks in `LRCDATA` object are represented in big endian.
 
 ## LRCDATA
 `LRCDATA` object
