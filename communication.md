@@ -1,4 +1,4 @@
-# Communication between Client and Server
+# Overview
 Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCData`. All data blocks in `LRCData` object are represented in big endian.
 
 ## LRCData
