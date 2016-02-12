@@ -1,9 +1,7 @@
 # Communication between Client and Server
-Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCDATA`. All data blocks in `LRCDATA` object are represented in big endian.
+Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCData`. All data blocks in `LRCData` object are represented in big endian.
 
 ## LRCData
-
-`LRCData` object
 
 | Type | Name |
 | ---- | --- |
@@ -11,8 +9,6 @@ Server communicates with Client by sending string commands. Once client accepts 
 | Data | *data* |
 
 ## Header
-
-Header of `LRCData` object
 
 | Type | Name | Offset | Description |
 | ---- | --- | --- | --- |
@@ -22,78 +18,76 @@ Header of `LRCData` object
 | S8 | *type* | 0x0043 | Type of data (0x0 - 0x2) |
 | S32 | *length* | 0x0043 | Length of DATA block in bytes |
 
-## DATA
+## Data
 
-`DATA` block of `LRCDATA` object
+Data inside this block depends on `type` parameter of `header`.
 
-```
-DATA
-{
-  U32       count       // Number of parts
-  PART[]    parts       // Array of different data types
-}
-```
+#### Types of Data block:
 
-## PART
-Data inside `PART` block depends on `type` field inside `HEADER`.
+###### 0x01 - Keyboard:
 
-#### Part types:
+| Type | Name | Description |
+| --- | --- | --- |
+| U32 | *count* | Number of items |
+| Keyboard[count] | *items* | Array of `Keyboard` items |
 
-###### Keyboard (type - 0x1):
-```
-PART
-{
-  U8        subtype     // Subtype of part
-  
-  if (subtype == 0x1)
-  {
-    VKINFO  vkInfo    // Information about virtual-key
-  }
-  
-  if (subtype == 0x2)
-  {
-    WNDINFO wndInfo   // Information about window
-  }
-}
-```
+###### 0x02 - Clipboard:
 
-###### Clipboard (type - 0x2):
-```
-PART
-{
-  U32       time        // Time of copying in buffer
-  WNDINFO   wndInfo     // Information about window from where text was copied
-  STRING    data        // Unicode clipboard data
-}
-```
+| Type | Name | Description |
+| --- | --- | --- |
+| U32 | *count* | Number of items |
+| Clipboard[count] | *items* | Array of `Clipboard` items |
 
-## VKINFO
+## Keyboard
+
+| Type | Name | Description |
+| --- | --- | --- |
+| U8 | *subtype* | Subtype of `Keyboard` item |
+
+###### If subtype == 0x01:
+
+| Type | Name | Description |
+| --- | --- | --- |
+| VKInfo | *vkInfo* | Virtual-Key information |
+
+###### If subtype == 0x02:
+
+| Type | Name | Description |
+| --- | --- | --- |
+| WNDInfo | *wndInfo* | Information about window |
+
+## Clipboard
+
+| Type | Name | Description |
+| --- | --- | --- |
+| U32 | *time* | Time of copying in buffer |
+| WNDINFO | *wndInfo* | Information about window from where text was copied |
+| STRING | *data* | Unicode clipboard data |
+
+## VKInfo
+
 Virtual-Key information
-```
-VKINFO
-{
-  U32       keyCode     // Virtual-Key code
-  U16       lang        // Language code
-  U8        flags       // Caps Lock / Shift flags
-}
-```
 
-## WNDINFO
-Window information
-```
-WNDINFO
-{
-  STRING    process     // Process name
-  STRING    title       // Window title
-}
-```
+| Type | Name | Description |
+| --- | --- | --- |
+| U32 | *keyCode* | Virtual-Key code |
+| U16 | *lang* | Language code |
+| U8 | *flags* | Caps Lock / Shift flags |
 
-## STRING
+## WNDInfo
+
+Information about window
+
+| Type | Name | Description |
+| --- | --- | --- |
+| STRING | *process* | Process name |
+| STRING | *title* | Window title |
+
+## String
+
 Sequence of unicode characters (without '\0')
-```
-STRING
-{
-  U32       length        // Length of string in bytes
-  S8[]      text          // Unicode text
-}
-```
+
+| Type | Name | Description |
+| --- | --- | --- |
+| U32 | *length* | Length of string in bytes |
+| S8[] | *text* | Unicode text |
