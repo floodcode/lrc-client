@@ -6,8 +6,8 @@ Server communicates with Client by sending string commands. Once client accepts 
 ```
 LRCDATA
 {
-  HEADER  header
-  DATA    data
+  HEADER    header
+  DATA      data
 }
 ```
 
@@ -16,11 +16,11 @@ Header of `LRCDATA` object
 ```
 HEADER
 {
-  U16     signature   // Signature of LRCDATA file (always should be 0x539)
-  U8      version     // Version of LRCDATA file (current is 0x1)
-  S8[64]  id          // Unique identifier of user
-  U8      type        // Type of contained data (0x0 - 0x2)
-  U32     length      // Length of DATA block in bytes
+  U16       signature   // Signature of LRCDATA file (always should be 0x539)
+  U8        version     // Version of LRCDATA file (current is 0x1)
+  S8[64]    id          // Unique identifier of user
+  U8        type        // Type of contained data (0x0 - 0x2)
+  U32       length      // Length of DATA block in bytes
 }
 ```
 
@@ -29,8 +29,8 @@ HEADER
 ```
 DATA
 {
-  U32     count       // Number of parts
-  PART[]  parts       // Array of different data types
+  U32       count       // Number of parts
+  PART[]    parts       // Array of different data types
 }
 ```
 
@@ -43,7 +43,7 @@ Data inside `PART` block depends on `type` field inside `HEADER`.
 ```
 PART
 {
-  U8      subtype     // Subtype of part
+  U8        subtype     // Subtype of part
   
   if (subtype == 0x1)
   {
@@ -61,9 +61,9 @@ PART
 ```
 PART
 {
-  U32     time        // Time of copying in buffer
-  WNDINFO wndInfo     // Information about window from where text was copied
-  STRING  data        // Unicode clipboard data
+  U32       time        // Time of copying in buffer
+  WNDINFO   wndInfo     // Information about window from where text was copied
+  STRING    data        // Unicode clipboard data
 }
 ```
 
@@ -72,9 +72,9 @@ Virtual-Key information
 ```
 VKINFO
 {
-  U32     keyCode     // Virtual-Key code
-  U16     lang        // Language code
-  U8      flags       // Caps Lock / Shift flags
+  U32       keyCode     // Virtual-Key code
+  U16       lang        // Language code
+  U8        flags       // Caps Lock / Shift flags
 }
 ```
 
@@ -83,8 +83,8 @@ Window information
 ```
 WNDINFO
 {
-  STRING  process     // Process name
-  STRING  title       // Window title
+  STRING    process     // Process name
+  STRING    title       // Window title
 }
 ```
 
@@ -93,7 +93,7 @@ Sequence of unicode characters (without '\0')
 ```
 STRING
 {
-  U32   length        // Length of string in bytes
-  S8[]  text          // Unicode text
+  U32       length        // Length of string in bytes
+  S8[]      text          // Unicode text
 }
 ```
