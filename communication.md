@@ -19,8 +19,7 @@ HEADER
   U16     signature   // Signature of LRCDATA file (always should be 0x539)
   U8      version     // Version of LRCDATA file (current is 0x1)
   S8[64]  id          // Unique identifier of user
-  U8      type        // Type of contained data (0x1 - 0x2)
-  U8      error       // Error code (0x0 if no error)
+  U8      type        // Type of contained data (0x0 - 0x2)
   U32     length      // Length of DATA block in bytes
 }
 ```
