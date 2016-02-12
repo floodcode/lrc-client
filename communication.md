@@ -95,6 +95,6 @@ Sequence of unicode characters
 STRING
 {
   U32   length        // Length of string in bytes
-  S8    text          // Unicode text
+  S8[]  text          // Unicode text
 }
 ```
