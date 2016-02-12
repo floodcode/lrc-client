@@ -1,7 +1,6 @@
 #pragma once
 #include "winfx.hpp"
 #include "wsclient.hpp"
-#include "jsonhelper.hpp"
 #include <thread>
 #include <mutex>
 
@@ -10,7 +9,6 @@ namespace websocket
 	static INT rc;
 	static WSADATA wsaData;
 	static wsclient::WebSocket::pointer ws = NULL;
-	static jsonhelper::JsonHelper jsonHelper;
 
 	static bool isRunning = false;
 
