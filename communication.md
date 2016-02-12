@@ -1,31 +1,31 @@
 # Communication between Client and Server
 Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCDATA`. All data blocks in `LRCDATA` object are represented in big endian.
 
-## LRCDATA
-`LRCDATA` object
-```
-LRCDATA
-{
-  HEADER    header
-  DATA      data
-}
-```
+## LRCData
 
-## HEADER
-Header of `LRCDATA` object
-```
-HEADER
-{
-  U16       signature   // Signature of LRCDATA file (always should be 0x539)
-  U8        version     // Version of LRCDATA file (current is 0x1)
-  S8[64]    id          // Unique identifier of user
-  U8        type        // Type of contained data (0x0 - 0x2)
-  U32       length      // Length of DATA block in bytes
-}
-```
+`LRCData` object
+
+| Type | Name |
+| ---- | --- |
+| Header | *header* |
+| Data | *data* |
+
+## Header
+
+Header of `LRCData` object
+
+| Type | Name | Offset | Description |
+| ---- | --- | --- | --- |
+| U16 | *signature* | 0x0000 | Signature of LRCDATA file (always should be 0x539) |
+| U8 | *version* | 0x0002 | Version of LRCDATA file (current is 0x1) |
+| S8[64] | *id* | 0x0003 | Unique identifier of user |
+| S8 | *type* | 0x0043 | Type of data (0x0 - 0x2) |
+| S32 | *length* | 0x0043 | Length of DATA block in bytes |
 
 ## DATA
+
 `DATA` block of `LRCDATA` object
+
 ```
 DATA
 {
