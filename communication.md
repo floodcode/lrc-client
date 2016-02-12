@@ -80,8 +80,8 @@ Information about window
 
 | Type | Name | Description |
 | --- | --- | --- |
-| STRING | *process* | Process name |
-| STRING | *title* | Window title |
+| String | *process* | Process name |
+| String | *title* | Window title |
 
 ## String
 
