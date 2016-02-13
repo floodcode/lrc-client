@@ -1,7 +1,7 @@
 # Overview
 Server communicates with Client by sending string commands. Once client accepts command, it sends back an binary representation of object `LRCData`. All data blocks in `LRCData` object are represented in big endian.
 
-## LRCData
+## LRCData file
 
 | Type | Name |
 | ---- | --- |
@@ -24,6 +24,13 @@ Data inside this block depends on `type` parameter of `header`.
 
 #### Types of Data block:
 
+###### 0x00 - Error message
+
+| Type | Name | Description |
+| --- | --- | --- |
+| U32 | *code* | Error code |
+| String | *message* | Error message |
+
 ###### 0x01 - Keyboard:
 
 | Type | Name | Description |
@@ -41,7 +48,7 @@ Data inside this block depends on `type` parameter of `header`.
 ## Keyboard
 
 | Type | Name | Description | Condition |
-| --- | --- | --- | --- |
+| --- | --- | --- | :---: |
 | U8 | *subtype* | Subtype of `Keyboard` item | `true` |
 | VKInfo | *vkInfo* | Virtual-Key information | `subtype == 0x1` |
 | WNDInfo | *wndInfo* | Information about window | `subtype == 0x2` |
