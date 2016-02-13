@@ -16,7 +16,7 @@ Server communicates with Client by sending string commands. Once client accepts 
 | U8 | *version* | 0x0002 | Version of LRCDATA file (current is 0x1) |
 | S8[64] | *id* | 0x0003 | Unique identifier of user |
 | S8 | *type* | 0x0043 | Type of data (0x0 - 0x2) |
-| S32 | *length* | 0x0043 | Length of DATA block in bytes |
+| S32 | *length* | 0x0044 | Length of DATA block in bytes |
 
 ## Data
 
@@ -40,29 +40,19 @@ Data inside this block depends on `type` parameter of `header`.
 
 ## Keyboard
 
-| Type | Name | Description |
-| --- | --- | --- |
-| U8 | *subtype* | Subtype of `Keyboard` item |
-
-###### If subtype == 0x01:
-
-| Type | Name | Description |
-| --- | --- | --- |
-| VKInfo | *vkInfo* | Virtual-Key information |
-
-###### If subtype == 0x02:
-
-| Type | Name | Description |
-| --- | --- | --- |
-| WNDInfo | *wndInfo* | Information about window |
+| Type | Name | Description | Condition |
+| --- | --- | --- | --- |
+| U8 | *subtype* | Subtype of `Keyboard` item | `true` |
+| VKInfo | *vkInfo* | Virtual-Key information | `subtype == 0x1` |
+| WNDInfo | *wndInfo* | Information about window | `subtype == 0x2` |
 
 ## Clipboard
 
 | Type | Name | Description |
 | --- | --- | --- |
 | U32 | *time* | Time of copying in buffer |
-| WNDINFO | *wndInfo* | Information about window from where text was copied |
-| STRING | *data* | Unicode clipboard data |
+| WNDInfo | *wndInfo* | Information about window from where text was copied |
+| String | *data* | Unicode clipboard data |
 
 ## VKInfo
 
@@ -90,4 +80,4 @@ Sequence of unicode characters (without '\0')
 | Type | Name | Description |
 | --- | --- | --- |
 | U32 | *length* | Length of string in bytes |
-| S8[] | *text* | Unicode text |
+| S8[length] | *text* | Unicode text |
