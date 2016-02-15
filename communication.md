@@ -5,8 +5,8 @@ Server communicates with Client by sending string commands. Once client accepts 
 
 | Type | Name |
 | ---- | --- |
-| Header | *header* |
-| Data | *data* |
+| [Header](#header) | *header* |
+| [Data](#data) | *data* |
 
 ## Header
 
@@ -29,37 +29,37 @@ Data inside this block depends on `type` parameter of `header`.
 | Type | Name | Description |
 | --- | --- | --- |
 | U32 | *code* | Error code |
-| String | *message* | Error message |
+| [String](#string) | *message* | Error message |
 
 ###### 0x01 - Keyboard:
 
 | Type | Name | Description |
 | --- | --- | --- |
 | U32 | *count* | Number of items |
-| Keyboard[count] | *items* | Array of `Keyboard` items |
+| [Keyboard[count]](#keyboard) | *items* | Array of `Keyboard` items |
 
 ###### 0x02 - Clipboard:
 
 | Type | Name | Description |
 | --- | --- | --- |
 | U32 | *count* | Number of items |
-| Clipboard[count] | *items* | Array of `Clipboard` items |
+| [Clipboard[count]](#clipboard) | *items* | Array of `Clipboard` items |
 
 ## Keyboard
 
 | Type | Name | Description | Condition |
 | --- | --- | --- | :---: |
 | U8 | *subtype* | Subtype of `Keyboard` item | `true` |
-| VKInfo | *vkInfo* | Virtual-Key information | `subtype == 0x1` |
-| WNDInfo | *wndInfo* | Information about window | `subtype == 0x2` |
+| [VKInfo](#vkinfo) | *vkInfo* | Virtual-Key information | `subtype == 0x1` |
+| [WNDInfo](#wndinfo) | *wndInfo* | Information about window | `subtype == 0x2` |
 
 ## Clipboard
 
 | Type | Name | Description |
 | --- | --- | --- |
 | U32 | *time* | Time of copying in buffer |
-| WNDInfo | *wndInfo* | Information about window from where text was copied |
-| String | *data* | Unicode clipboard data |
+| [WNDInfo](#wndinfo) | *wndInfo* | Information about window from where text was copied |
+| [String](#string) | *data* | Unicode clipboard data |
 
 ## VKInfo
 
@@ -77,8 +77,8 @@ Information about window
 
 | Type | Name | Description |
 | --- | --- | --- |
-| String | *process* | Process name |
-| String | *title* | Window title |
+| [String](#string) | *process* | Process name |
+| [String](#string) | *title* | Window title |
 
 ## String
 
@@ -88,3 +88,14 @@ Sequence of unicode characters (without '\0')
 | --- | --- | --- |
 | U32 | *length* | Length of string in bytes |
 | S8[length] | *text* | Unicode text |
+
+# Primitive types
+
+| Type | Size | Description |
+| --- | --- | --- |
+| S8 | 1 | Signed 8-bit integer |
+| S16 | 2 | Signed 16-bit integer |
+| S32 | 4 | Signed 32-bit integer |
+| U8 | 1 | Unsigned 8-bit integer |
+| U16 | 2 | Unsigned 16-bit integer |
+| U32 | 4 | Unsigned 32-bit integer |
