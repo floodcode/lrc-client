@@ -125,18 +125,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="binarywriter.cpp" />
     <ClCompile Include="clipboard.cpp" />
     <ClCompile Include="io.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="LRC.cpp" />
+    <ClCompile Include="lrcdatawriter.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="websocket.cpp" />
     <ClCompile Include="wsclient.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="binarywriter.hpp" />
+    <ClInclude Include="binpptypes.hpp" />
     <ClInclude Include="clipboard.hpp" />
     <ClInclude Include="io.hpp" />
+    <ClInclude Include="lrcdatatypes.hpp" />
+    <ClInclude Include="lrcdatawriter.hpp" />
     <ClInclude Include="mouse.hpp" />
     <ClInclude Include="services.hpp" />
     <ClInclude Include="keyboard.hpp" />

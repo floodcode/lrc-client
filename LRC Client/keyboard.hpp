@@ -2,6 +2,7 @@
 #include "tools.hpp"
 #include "io.hpp"
 #include "winfx.hpp"
+#include "lrcdatawriter.hpp"
 #include <thread>
 #include <list>
 #include <queue>
@@ -13,14 +14,10 @@ namespace services
 {
 	namespace keyboard
 	{
-		typedef struct
-		{
-			DWORD vkCode;
-			WORD lang;
-			WORD flags;
-		} VirtualKeyInfo;
-		typedef std::list<VirtualKeyInfo> VirtualKeyInfoList;
-		typedef std::queue<VirtualKeyInfo> VirtualKeyInfoQueue;
+		using namespace lrcdata;
+
+		typedef std::list<PartKeyboard> PKList;
+		typedef std::queue<PartKeyboard> PKQueue;
 
 		static std::thread vkQueueThread;
 
@@ -31,9 +28,9 @@ namespace services
 		static size_t vkRepeats;
 		static size_t vkListCursorBegin;
 		static size_t vkListCursor;
-		static VirtualKeyInfoList vkList;
-		static VirtualKeyInfoQueue vkQueue;
-		static VirtualKeyInfo lastKeyPressed;
+		static PKList vkList;
+		static PKQueue vkQueue;
+		static VKInfo lastKeyPressed;
 
 		static HHOOK hhkLowLevelKybd = NULL;
 
@@ -43,12 +40,12 @@ namespace services
 		void stop();
 		void save();
 		void processqueue();
-		void processvk(VirtualKeyInfo vkInfo);
+		void processvk(VKInfo vkInfo);
 		void onDelete();
 		void onBackspace();
 		void clear();
 
-		inline bool isprintable(DWORD vkCode);
-		inline bool vkcmp(VirtualKeyInfo vk1, VirtualKeyInfo vk2);
+		bool isprintable(DWORD vkCode);
+		bool vkcmp(VKInfo vk1, VKInfo vk2);
 	}
 }
