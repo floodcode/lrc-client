@@ -3,10 +3,10 @@ Server communicates with Client by sending string commands. Once client accepts 
 
 ## LRCData file
 
-| Type | Name |
-| ---- | --- |
-| [Header](#header) | *header* |
-| [Data](#data) | *data* |
+| Type | Name | Offset |
+| ---- | --- | --- |
+| [Header](#header) | *header* | 0x0000 |
+| [Data](#data) | *data* | 0x0049 |
 
 ## Header
 
