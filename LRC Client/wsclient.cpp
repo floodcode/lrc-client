@@ -72,7 +72,7 @@ namespace
 	}
 
 
-	class _DummyWebSocket : public wsclient::WebSocket
+	class _DummyWebSocket : public wsclient::WebSocketClient
 	{
 	public:
 		void poll(int timeout) { }
@@ -87,7 +87,7 @@ namespace
 	};
 
 
-	class _RealWebSocket : public wsclient::WebSocket
+	class _RealWebSocket : public wsclient::WebSocketClient
 	{
 	public:
 		// http://tools.ietf.org/html/rfc6455#section-5.2  Base Framing Protocol
@@ -436,7 +436,7 @@ namespace
 	};
 
 
-	wsclient::WebSocket::pointer from_url(const std::string& url, bool useMask, const std::string& origin)
+	wsclient::WebSocketClient::pointer from_url(const std::string& url, bool useMask, const std::string& origin)
 	{
 		char host[128];
 		int port;
@@ -540,7 +540,7 @@ namespace
 		u_long on = 1;
 		ioctlsocket(sockfd, FIONBIO, &on);
 		fprintf(stderr, "Connected to: %s\n", url.c_str());
-		return wsclient::WebSocket::pointer(new _RealWebSocket(sockfd, useMask));
+		return wsclient::WebSocketClient::pointer(new _RealWebSocket(sockfd, useMask));
 	}
 
 } // end of module-only namespace
@@ -550,18 +550,18 @@ namespace
 namespace wsclient
 {
 
-	WebSocket::pointer WebSocket::create_dummy()
+	WebSocketClient::pointer WebSocketClient::create_dummy()
 	{
 		static pointer dummy = pointer(new _DummyWebSocket);
 		return dummy;
 	}
 
-	WebSocket::pointer WebSocket::from_url(const std::string& url, const std::string& origin)
+	WebSocketClient::pointer WebSocketClient::from_url(const std::string& url, const std::string& origin)
 	{
 		return ::from_url(url, true, origin);
 	}
 
-	WebSocket::pointer WebSocket::from_url_no_mask(const std::string& url, const std::string& origin)
+	WebSocketClient::pointer WebSocketClient::from_url_no_mask(const std::string& url, const std::string& origin)
 	{
 		return ::from_url(url, false, origin);
 	}

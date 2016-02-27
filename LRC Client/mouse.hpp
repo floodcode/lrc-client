@@ -1,17 +1,10 @@
 #pragma once
-#include "winfx.hpp"
 
-namespace services
+namespace Services
 {
-	namespace mouse
+	namespace Mouse
 	{
-		static bool isRunning = false;
-
-		static HHOOK hhkLowLevelMouse = NULL;
-
-		LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam);
-
-		void run();
-		void stop();
+		void Run();
+		void Stop();
 	}
 }

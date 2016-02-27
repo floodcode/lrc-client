@@ -1,12 +1,37 @@
 #include "services.hpp"
+
 #if CLIPBOARD_SERVICE
-void services::clipboard::run()
-{
 
+using namespace Services;
+
+namespace
+{
+	bool isRunning = false;
 }
 
-void services::clipboard::stop()
+void Clipboard::Run()
 {
+	if (isRunning)
+	{
+		return;
+	}
 
+	isRunning = true;
 }
+
+void Clipboard::Stop()
+{
+	if (!isRunning)
+	{
+		return;
+	}
+
+	isRunning = false;
+}
+
+bool Clipboard::IsRunning()
+{
+	return isRunning;
+}
+
 #endif

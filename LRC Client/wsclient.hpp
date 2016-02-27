@@ -8,9 +8,9 @@ namespace wsclient
 	struct Callback_Imp { virtual void operator()(const std::string& message) = 0; };
 	struct BytesCallback_Imp { virtual void operator()(const std::vector<uint8_t>& message) = 0; };
 
-	class WebSocket {
+	class WebSocketClient {
 	public:
-		typedef WebSocket * pointer;
+		typedef WebSocketClient * pointer;
 		typedef enum readyStateValues { CLOSING, CLOSED, CONNECTING, OPEN } readyStateValues;
 
 		// Factories:
@@ -19,7 +19,7 @@ namespace wsclient
 		static pointer from_url_no_mask(const std::string& url, const std::string& origin = std::string());
 
 		// Interfaces:
-		virtual ~WebSocket() { }
+		virtual ~WebSocketClient() { }
 		virtual void poll(int timeout = 0) = 0; // timeout in milliseconds
 		virtual void send(const std::string& message) = 0;
 		virtual void sendBinary(const std::string& message) = 0;

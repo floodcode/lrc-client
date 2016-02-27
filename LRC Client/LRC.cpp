@@ -1,7 +1,6 @@
 #include "services.hpp"
 #include "winfx.hpp"
 #include <cstring>
-#include <thread>
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -21,7 +20,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 	// Run all services
-	services::runAll();
+	Services::RunAll();
 
 	// Windows message loop
 	MSG msg;
@@ -40,7 +39,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 	// Stop all services
-	services::stopAll();
+	Services::StopAll();
 
 	return 0;
 }

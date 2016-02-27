@@ -1,11 +1,11 @@
 #pragma once
-#include "winfx.hpp"
 
-namespace services
+namespace Services
 {
-	namespace clipboard
+	namespace Clipboard
 	{
-		void run();
-		void stop();
+		void Run();
+		void Stop();
+		bool IsRunning();
 	}
 }

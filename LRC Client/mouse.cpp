@@ -1,9 +1,38 @@
 #include "services.hpp"
+
 #if MOUSE_SERVICE
 
-void services::mouse::run()
+#include "winfx.hpp"
+
+using namespace Services;
+
+namespace
 {
-	// Exit function if service is already running
+	static bool isRunning = false;
+
+	static HHOOK hhkLowLevelMouse = NULL;
+
+	LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
+	{
+		if (nCode == HC_ACTION)
+		{
+			switch (wParam)
+			{
+			case WM_LBUTTONDOWN:
+				// Left mouse button down
+				break;
+			case WM_RBUTTONDOWN:
+				// Right mouse button down
+				break;
+			}
+		}
+
+		return CallNextHookEx(hhkLowLevelMouse, nCode, wParam, lParam);
+	}
+}
+
+void Services::Mouse::Run()
+{
 	if (isRunning)
 	{
 		return;
@@ -18,7 +47,7 @@ void services::mouse::run()
 	isRunning = true;
 }
 
-void services::mouse::stop()
+void Services::Mouse::Stop()
 {
 	if (!isRunning)
 	{
@@ -32,26 +61,6 @@ void services::mouse::stop()
 	}
 
 	isRunning = false;
-}
-
-LRESULT CALLBACK services::mouse::LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
-{
-	if (nCode == HC_ACTION)
-	{
-		switch (wParam)
-		{
-		case WM_LBUTTONDOWN:
-			// Left mouse button down
-			GetLastError();
-			break;
-		case WM_RBUTTONDOWN:
-			// Right mouse button down
-			GetLastError();
-			break;
-		}
-	}
-
-	return CallNextHookEx(hhkLowLevelMouse, nCode, wParam, lParam);
 }
 
 #endif // MOUSE_SERVICE

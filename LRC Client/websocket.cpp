@@ -1,8 +1,80 @@
 #include "services.hpp"
 
-using wsclient::WebSocket;
+#if WEBSOCKET_SERVICE
 
-void websocket::run()
+#include "winfx.hpp"
+#include "wsclient.hpp"
+#include <thread>
+#include <mutex>
+
+using namespace Services;
+using wsclient::WebSocketClient;
+
+namespace
+{
+	bool isRunning = false;
+
+	INT rc;
+	WSADATA wsaData;
+	wsclient::WebSocketClient::pointer ws = NULL;
+
+	std::thread wsWorkerThread;
+	std::mutex wsSendMutex;
+
+	// Thread-safely send text messasge to WebSocket server
+	void send(const std::string &message)
+	{
+		wsSendMutex.lock();
+		ws->send(message);
+		wsSendMutex.unlock();
+	}
+
+	// Thread-safely send binary message to WebSocket server
+	void sendBinary(std::vector<byte> message)
+	{
+		wsSendMutex.lock();
+		ws->sendBinary(message);
+		wsSendMutex.unlock();
+	}
+
+	// Receiving incoming messages
+	void handlemessage(const std::string &message)
+	{
+		// TODO: Pass message to command handler
+		send("Accepted - " + message);
+	}
+
+	// Try connect to WebSocket server
+	bool tryconnect()
+	{
+		ws = WebSocketClient::from_url(WS_HOST);
+		return ws != NULL;
+	}
+
+	// Automaticly connects to server and accepts incoming messages
+	void worker()
+	{
+		while (isRunning)
+		{
+			if (tryconnect())
+			{
+				int a = 2;
+				while (ws->getReadyState() != WebSocketClient::CLOSED)
+				{
+					ws->poll(100);
+					ws->dispatch(handlemessage);
+				}
+				delete ws;
+			}
+			else
+			{
+				Sleep(1000 * WS_CONNECTION_DELAY_SEC);
+			}
+		}
+	}
+}
+
+void WebSocket::Run()
 {
 	if (isRunning)
 	{
@@ -14,7 +86,7 @@ void websocket::run()
 	wsWorkerThread = std::thread(worker);
 }
 
-void websocket::stop()
+void WebSocket::Stop()
 {
 	if (!isRunning)
 	{
@@ -26,41 +98,9 @@ void websocket::stop()
 	WSACleanup();
 }
 
-void websocket::worker()
+bool WebSocket::IsRunning()
 {
-	while (isRunning)
-	{
-		if (tryconnect())
-		{
-			while (ws->getReadyState() != WebSocket::CLOSED)
-			{
-				ws->poll();
-				ws->dispatch(handlemessage);
-			}
-			delete ws;
-		}
-		else
-		{
-			Sleep(1000 * WS_CONNECTION_DELAY_SEC);
-		}
-	}
+	return isRunning;
 }
 
-void websocket::handlemessage(const std::string &message)
-{
-
-}
-
-
-void websocket::send(const std::string &message)
-{
-	wsSendMutex.lock();
-	ws->send(message);
-	wsSendMutex.unlock();
-}
-
-bool websocket::tryconnect()
-{
-	ws = WebSocket::from_url(WS_HOST);
-	return ws != NULL;
-}
+#endif // WEBSOCKET_SERVICE
