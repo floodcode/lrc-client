@@ -1,6 +1,6 @@
 #include "services.hpp"
 
-#if WEBSOCKET_SERVICE
+#if SERVICE_WEBSOCKET_ENABLED
 
 #include "winfx.hpp"
 #include "wsclient.hpp"
@@ -16,7 +16,7 @@ namespace
 
 	INT rc;
 	WSADATA wsaData;
-	wsclient::WebSocketClient::pointer ws = NULL;
+	WebSocketClient::pointer ws = NULL;
 
 	std::thread wsWorkerThread;
 	std::mutex wsSendMutex;
@@ -41,7 +41,7 @@ namespace
 	void handlemessage(const std::string &message)
 	{
 		// TODO: Pass message to command handler
-		send("Accepted - " + message);
+		// send("Accepted - " + message);
 	}
 
 	// Try connect to WebSocket server
@@ -58,7 +58,6 @@ namespace
 		{
 			if (tryconnect())
 			{
-				int a = 2;
 				while (ws->getReadyState() != WebSocketClient::CLOSED)
 				{
 					ws->poll(100);
@@ -98,9 +97,14 @@ void WebSocket::Stop()
 	WSACleanup();
 }
 
+void WebSocket::Send(std::vector<byte> data)
+{
+	sendBinary(data);
+}
+
 bool WebSocket::IsRunning()
 {
 	return isRunning;
 }
 
-#endif // WEBSOCKET_SERVICE
+#endif // SERVICE_WEBSOCKET_ENABLED

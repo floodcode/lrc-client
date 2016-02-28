@@ -1,6 +1,6 @@
 #include "services.hpp"
 
-#if CLIPBOARD_SERVICE
+#if SERVICE_CLIPBOARD_ENABLED
 
 using namespace Services;
 

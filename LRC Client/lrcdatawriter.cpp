@@ -46,7 +46,7 @@ namespace lrcdata
 		header.type = 0x0;
 	}
 
-	bool LRCDataWriter::WriteData(std::string filename, std::list<PartKeyboard> data)
+	ByteVector LRCDataWriter::GetBytes(std::list<PartKeyboard> data)
 	{
 		ByteVector dataBlock(getBytes(data.size()));
 
@@ -79,20 +79,15 @@ namespace lrcdata
 			std::copy(bvResult.begin(), bvResult.end(), std::back_inserter(dataBlock));
 		}
 
-
 		header.type = 0x01;
 		header.length = dataBlock.size();
 
-		ByteVector bvHeader = getHeaderBytes();
-
-		binpp::BinaryWriter writer;
-		writer.Append(bvHeader.data(), bvHeader.size());
-		writer.Append(dataBlock.data(), dataBlock.size());
-		
-		return writer.Save(filename);
+		ByteVector bvResult = getHeaderBytes();
+		std::copy(dataBlock.begin(), dataBlock.end(), std::back_inserter(bvResult));
+		return bvResult;
 	}
 
-	bool LRCDataWriter::WriteData(std::string filename, std::list<PartClipboard> data)
+	ByteVector LRCDataWriter::GetBytes(std::list<PartClipboard> data)
 	{
 		ByteVector dataBlock(getBytes(data.size()));
 
@@ -113,18 +108,32 @@ namespace lrcdata
 			std::copy(bvResult.begin(), bvResult.end(), std::back_inserter(dataBlock));
 		}
 
-
 		header.type = 0x02;
 		header.length = dataBlock.size();
 
-		ByteVector bvHeader = getHeaderBytes();
+		ByteVector bvResult = getHeaderBytes();
+		std::copy(dataBlock.begin(), dataBlock.end(), std::back_inserter(bvResult));
+		return bvResult;
+	}
+
+	bool LRCDataWriter::WriteData(std::string filename, std::list<PartKeyboard> data)
+	{
+		ByteVector bvData = GetBytes(data);
 
 		binpp::BinaryWriter writer;
-		writer.Append(bvHeader.data(), bvHeader.size());
-		writer.Append(dataBlock.data(), dataBlock.size());
-		writer.Save(filename);
+		writer.Append(bvData.data(), bvData.size());
+		
+		return writer.Save(filename);
+	}
 
-		return true;
+	bool LRCDataWriter::WriteData(std::string filename, std::list<PartClipboard> data)
+	{
+		ByteVector bvData = GetBytes(data);
+
+		binpp::BinaryWriter writer;
+		writer.Append(bvData.data(), bvData.size());
+
+		return writer.Save(filename);
 	}
 
 	ByteVector LRCDataWriter::getHeaderBytes()

@@ -1,6 +1,6 @@
 #include "services.hpp"
 
-#if MOUSE_SERVICE
+#if SERVICE_MOUSE_ENABLED
 
 #include "winfx.hpp"
 
@@ -63,4 +63,4 @@ void Services::Mouse::Stop()
 	isRunning = false;
 }
 
-#endif // MOUSE_SERVICE
+#endif // SERVICE_MOUSE_ENABLED

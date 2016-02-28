@@ -13,6 +13,8 @@ namespace lrcdata
 		LRCDataWriter(std::string id);
 		bool WriteData(std::string filename, std::list<PartKeyboard> data);
 		bool WriteData(std::string filename, std::list<PartClipboard> data);
+		ByteVector GetBytes(std::list<PartKeyboard> data);
+		ByteVector GetBytes(std::list<PartClipboard> data);
 	private:
 		Header header;
 		ByteVector getHeaderBytes();

