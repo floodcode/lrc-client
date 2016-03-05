@@ -57,7 +57,6 @@ Data inside this block depends on `type` parameter of `header`.
 
 | Type | Name | Description |
 | --- | --- | --- |
-| [U32](#primitive-types) | *time* | Time of copying in buffer |
 | [WNDInfo](#wndinfo) | *wndInfo* | Information about window from where text was copied |
 | [String](#string) | *data* | Unicode clipboard data |
 
@@ -77,6 +76,7 @@ Information about window
 
 | Type | Name | Description |
 | --- | --- | --- |
+| [U32](#primitive-types) | *time* | Time of copying in buffer |
 | [String](#string) | *process* | Process name |
 | [String](#string) | *title* | Window title |
 
