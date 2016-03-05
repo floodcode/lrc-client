@@ -1,12 +1,11 @@
 #pragma once
-#include <ctime>
+#include "winfx.hpp"
+#include "lrcdatatypes.hpp"
 #include <string>
 
 namespace tools
 {
-	enum TimeFormat
-	{
-		file
-	};
-	std::string getTime(TimeFormat timeFormat);
+	lrcdata::WNDInfo GetWNDInfo(HWND hwnd);
+	std::wstring GetWNDTitle(HWND hwnd);
+	std::wstring GetWNDProcName(HWND hwnd);
 }

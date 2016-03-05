@@ -95,7 +95,7 @@ namespace lrcdata
 		{
 			ByteVector bvResult;
 
-			ByteVector bvTime = getBytes(it->time);
+			ByteVector bvTime = getBytes(it->wndInfo.time);
 			ByteVector btProcessName = getStrBytes(it->wndInfo.processName);
 			ByteVector bvTitle = getStrBytes(it->wndInfo.title);
 			ByteVector bvData = getStrBytes(it->data);

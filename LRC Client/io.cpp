@@ -12,15 +12,3 @@ bool io::directory::create(std::string path)
 {
 	return CreateDirectoryA(path.c_str(), NULL) != FALSE;
 }
-
-bool io::file::write(std::string path, std::string text)
-{
-	std::ofstream output(path, std::ios::trunc);
-	if (output.is_open())
-	{
-		output << text;
-		output.close();
-		return true;
-	}
-	return false;
-}

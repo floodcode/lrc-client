@@ -13,6 +13,7 @@ using wsclient::WebSocketClient;
 namespace
 {
 	bool isRunning = false;
+	bool isConnected = false;
 
 	INT rc;
 	WSADATA wsaData;
@@ -24,8 +25,10 @@ namespace
 	// Thread-safely send text messasge to WebSocket server
 	void send(const std::string &message)
 	{
-		wsSendMutex.lock();
-		ws->send(message);
+		wsSendMutex.lock(); if (isConnected)
+		{
+			ws->send(message);
+		}
 		wsSendMutex.unlock();
 	}
 
@@ -33,7 +36,10 @@ namespace
 	void sendBinary(std::vector<byte> message)
 	{
 		wsSendMutex.lock();
-		ws->sendBinary(message);
+		if (isConnected)
+		{
+			ws->sendBinary(message);
+		}
 		wsSendMutex.unlock();
 	}
 
@@ -56,7 +62,8 @@ namespace
 	{
 		while (isRunning)
 		{
-			if (tryconnect())
+			isConnected = tryconnect();
+			if (isConnected)
 			{
 				while (ws->getReadyState() != WebSocketClient::CLOSED)
 				{
@@ -64,6 +71,7 @@ namespace
 					ws->dispatch(handlemessage);
 				}
 				delete ws;
+				isConnected = false;
 			}
 			else
 			{
@@ -92,14 +100,21 @@ void WebSocket::Stop()
 		return;
 	}
 
-	isRunning = false;
 	wsWorkerThread.join();
 	WSACleanup();
+	isRunning = false;
 }
 
 void WebSocket::Send(std::vector<byte> data)
 {
-	sendBinary(data);
+	try
+	{
+		sendBinary(data);
+	}
+	catch (...)
+	{
+		return;
+	}
 }
 
 bool WebSocket::IsRunning()

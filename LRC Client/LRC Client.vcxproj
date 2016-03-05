@@ -128,6 +128,7 @@
     <ClCompile Include="binarywriter.cpp" />
     <ClCompile Include="clipboard.cpp" />
     <ClCompile Include="io.cpp" />
+    <ClCompile Include="kbdworker.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="LRC.cpp" />
     <ClCompile Include="lrcdatawriter.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="binpptypes.hpp" />
     <ClInclude Include="clipboard.hpp" />
     <ClInclude Include="io.hpp" />
+    <ClInclude Include="kbdworker.h" />
     <ClInclude Include="lrcdatatypes.hpp" />
     <ClInclude Include="lrcdatawriter.hpp" />
     <ClInclude Include="mouse.hpp" />

@@ -1,40 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Services">
       <UniqueIdentifier>{ea75761c-682e-450c-b0bb-210fe6bc8101}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{369784de-fcdf-4dad-b863-f72d02e711e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LRC.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="io.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="tools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wsclient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="binarywriter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lrcdatawriter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="keyboard.cpp">
       <Filter>Services</Filter>
@@ -48,35 +31,21 @@
     <ClCompile Include="mouse.cpp">
       <Filter>Services</Filter>
     </ClCompile>
+    <ClCompile Include="binarywriter.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="lrcdatawriter.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="wsclient.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="LRC.cpp" />
+    <ClCompile Include="kbdworker.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="io.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="services.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tools.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wsclient.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="winfx.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="binarywriter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="binpptypes.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lrcdatatypes.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lrcdatawriter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="keyboard.hpp">
       <Filter>Services</Filter>
     </ClInclude>
@@ -88,6 +57,36 @@
     </ClInclude>
     <ClInclude Include="mouse.hpp">
       <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="io.hpp">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="services.hpp">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.hpp">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="winfx.hpp">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="binarywriter.hpp">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="binpptypes.hpp">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="lrcdatatypes.hpp">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="lrcdatawriter.hpp">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="wsclient.hpp">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="kbdworker.h">
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
