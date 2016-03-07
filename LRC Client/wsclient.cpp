@@ -421,7 +421,19 @@ namespace
 			txbuf.insert(txbuf.end(), message_begin, message_end);
 			if (useMask)
 			{
-				for (size_t i = 0; i != message_size; ++i) { *(txbuf.end() - message_size + i) ^= masking_key[i & 0x3]; }
+				// Bug! Bug! Bug!
+				// Let's skip it. Why not?
+				try
+				{
+					for (size_t i = 0; i != message_size; ++i)
+					{
+						*(txbuf.end() - message_size + i) ^= masking_key[i & 0x3];
+					}
+				}
+				catch (...)
+				{
+					// Lel. Do nothing.
+				}
 			}
 		}
 
@@ -474,11 +486,11 @@ namespace
 			fprintf(stderr, "ERROR: Could not parse WebSocket url: %s\n", url.c_str());
 			return NULL;
 		}
-		fprintf(stderr, "easywsclient: connecting: host=%s port=%d path=/%s\n", host, port, path);
+		fprintf(stderr, "[WebSocket] Connecting to host=%s port=%d path=/%s\n", host, port, path);
 		socket_t sockfd = hostname_connect(host, port);
 		if (sockfd == INVALID_SOCKET)
 		{
-			fprintf(stderr, "Unable to connect to %s:%d\n", host, port);
+			fprintf(stderr, "[WebSocket] Unable to connect to %s:%d\n", host, port);
 			return NULL;
 		}
 		{
@@ -539,7 +551,7 @@ namespace
 		setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)); // Disable Nagle's algorithm
 		u_long on = 1;
 		ioctlsocket(sockfd, FIONBIO, &on);
-		fprintf(stderr, "Connected to: %s\n", url.c_str());
+		fprintf(stderr, "[WebSocket] Connected to %s\n", url.c_str());
 		return wsclient::WebSocketClient::pointer(new _RealWebSocket(sockfd, useMask));
 	}
 

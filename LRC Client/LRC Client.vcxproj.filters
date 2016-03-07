@@ -42,7 +42,10 @@
     </ClCompile>
     <ClCompile Include="LRC.cpp" />
     <ClCompile Include="kbdworker.cpp">
-      <Filter>Main</Filter>
+      <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="lrcdatahandler.cpp">
+      <Filter>Services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,7 +88,13 @@
     <ClInclude Include="wsclient.hpp">
       <Filter>Libraries</Filter>
     </ClInclude>
+    <ClInclude Include="lrcdatahandler.h">
+      <Filter>Services</Filter>
+    </ClInclude>
     <ClInclude Include="kbdworker.h">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>

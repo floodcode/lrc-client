@@ -3,7 +3,7 @@
 #include <locale>
 #include <codecvt>
 
-namespace lrcdata
+namespace LRCData
 {
 	template<typename T>
 	ByteVector getBytes(T data)
@@ -69,9 +69,11 @@ namespace lrcdata
 			}
 			else if (it->subtype == 0x2)
 			{
+				ByteVector bvTime = getBytes(it->wndInfo.time);
 				ByteVector bvProcessName = getStrBytes(it->wndInfo.processName);
 				ByteVector bvTitle = getStrBytes(it->wndInfo.title);
 
+				std::copy(bvTime.begin(), bvTime.end(), std::back_inserter(bvResult));
 				std::copy(bvProcessName.begin(), bvProcessName.end(), std::back_inserter(bvResult));
 				std::copy(bvTitle.begin(), bvTitle.end(), std::back_inserter(bvResult));
 			}

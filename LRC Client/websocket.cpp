@@ -6,26 +6,30 @@
 #include "wsclient.hpp"
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 using namespace Services;
 using wsclient::WebSocketClient;
 
 namespace
 {
-	bool isRunning = false;
-	bool isConnected = false;
+	std::atomic_bool isRunning = false;
+	std::atomic_bool isConnected = false;
 
 	INT rc;
 	WSADATA wsaData;
 	WebSocketClient::pointer ws = NULL;
 
 	std::thread wsWorkerThread;
+
+	std::mutex stateMutex;
 	std::mutex wsSendMutex;
 
 	// Thread-safely send text messasge to WebSocket server
 	void send(const std::string &message)
 	{
-		wsSendMutex.lock(); if (isConnected)
+		wsSendMutex.lock();
+		if (ws->getReadyState() == WebSocketClient::OPEN)
 		{
 			ws->send(message);
 		}
@@ -36,7 +40,7 @@ namespace
 	void sendBinary(std::vector<byte> message)
 	{
 		wsSendMutex.lock();
-		if (isConnected)
+		if (ws->getReadyState() == WebSocketClient::OPEN)
 		{
 			ws->sendBinary(message);
 		}
@@ -83,18 +87,24 @@ namespace
 
 void WebSocket::Run()
 {
-	if (isRunning)
+	stateMutex.lock();
+
+	if (isRunning.load())
 	{
 		return;
 	}
+	isRunning.store(true);
 
-	isRunning = true;
 	rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	wsWorkerThread = std::thread(worker);
+
+	stateMutex.unlock();
 }
 
 void WebSocket::Stop()
 {
+	stateMutex.lock();
+
 	if (!isRunning)
 	{
 		return;
@@ -103,17 +113,20 @@ void WebSocket::Stop()
 	wsWorkerThread.join();
 	WSACleanup();
 	isRunning = false;
+
+	stateMutex.unlock();
 }
 
-void WebSocket::Send(std::vector<byte> data)
+bool WebSocket::Send(std::vector<byte> data)
 {
 	try
 	{
 		sendBinary(data);
+		return true;
 	}
 	catch (...)
 	{
-		return;
+		return false;
 	}
 }
 

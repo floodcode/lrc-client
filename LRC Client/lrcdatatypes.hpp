@@ -8,7 +8,7 @@
 #include <string>
 #include <cstdint>
 
-namespace lrcdata
+namespace LRCData
 {
 	typedef std::vector<byte> ByteVector;
 

@@ -5,7 +5,7 @@
 
 namespace tools
 {
-	lrcdata::WNDInfo GetWNDInfo(HWND hwnd);
+	LRCData::WNDInfo GetWNDInfo(HWND hwnd);
 	std::wstring GetWNDTitle(HWND hwnd);
 	std::wstring GetWNDProcName(HWND hwnd);
 }

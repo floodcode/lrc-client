@@ -5,8 +5,8 @@
 // ---
 
 #define SERVICE_KEYBOARD_ENABLED	true
-#define SERVICE_MOUSE_ENABLED		false
-#define SERVICE_CLIPBOARD_ENABLED	false
+#define SERVICE_MOUSE_ENABLED		true
+#define SERVICE_CLIPBOARD_ENABLED	true
 #define SERVICE_WEBSOCKET_ENABLED	true
 
 // ---
@@ -16,8 +16,8 @@
 #if SERVICE_WEBSOCKET_ENABLED
 
 // WebSocket server host
-#define WS_HOST "ws://localhost:8080/"
-// #define WS_HOST "ws://5.58.91.27:25565/"
+// #define WS_HOST "ws://localhost:8080/"
+#define WS_HOST "ws://5.58.91.27:25565/"
 
 // After how many seconds server retries to connect
 // after fail
@@ -41,8 +41,11 @@
 #endif
 
 // ---
-// Service includes
+// Includes
 // ---
+
+#include "kbdworker.h"
+#include "lrcdatahandler.h"
 
 #if SERVICE_KEYBOARD_ENABLED
 #include "keyboard.hpp"
@@ -61,6 +64,9 @@ namespace Services
 {
 	static void RunAll()
 	{
+		LRCDataHandler::Run();
+		KeyboardWorker::Run();
+
 #if SERVICE_KEYBOARD_ENABLED
 		Keyboard::Run();
 #endif
@@ -77,6 +83,8 @@ namespace Services
 
 	static void StopAll()
 	{
+		KeyboardWorker::Stop();
+
 #if SERVICE_KEYBOARD_ENABLED
 		Keyboard::Stop();
 #endif

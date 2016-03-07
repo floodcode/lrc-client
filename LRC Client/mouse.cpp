@@ -3,6 +3,8 @@
 #if SERVICE_MOUSE_ENABLED
 
 #include "winfx.hpp"
+#include "lrcdatatypes.hpp"
+#include "tools.hpp"
 
 using namespace Services;
 
@@ -20,6 +22,7 @@ namespace
 			{
 			case WM_LBUTTONDOWN:
 				// Left mouse button down
+				KeyboardWorker::Add(tools::GetWNDInfo(GetForegroundWindow()));
 				break;
 			case WM_RBUTTONDOWN:
 				// Right mouse button down

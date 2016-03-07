@@ -1,11 +1,13 @@
 #include "tools.hpp"
 #include <Tlhelp32.h>
+#include <ctime>
 
 const wchar_t wstrUnknown[8] = L"Unknown";
 
-lrcdata::WNDInfo tools::GetWNDInfo(HWND hwnd)
+LRCData::WNDInfo tools::GetWNDInfo(HWND hwnd)
 {
-	lrcdata::WNDInfo result;
+	LRCData::WNDInfo result;
+	result.time = static_cast<uint32_t>(time(0));
 	result.title.append(GetWNDTitle(hwnd));
 	result.processName.append(GetWNDProcName(hwnd));
 	return result;
@@ -15,7 +17,15 @@ std::wstring tools::GetWNDTitle(HWND hwnd)
 {
 	WCHAR title[256];
 	int status = GetWindowTextW(hwnd, title, 256);
-	return status != 0 ? title : wstrUnknown;
+
+	if (status == 0 || title[0] == 0)
+	{
+		return wstrUnknown;
+	}
+	else
+	{
+		return title;
+	}
 }
 
 std::wstring tools::GetWNDProcName(HWND hwnd)
@@ -30,17 +40,34 @@ std::wstring tools::GetWNDProcName(HWND hwnd)
 		MODULEENTRY32W me = { sizeof(MODULEENTRY32W) };
 		if (Module32FirstW(hTH, &me))
 		{
-			WCHAR *procName = me.szExePath;
+			WCHAR *procPath = me.szExePath;
 
 			int pos = -1;
 			for (size_t i = 0; i < MAX_PATH; ++i)
 			{
-				if (procName[i] == '\\')
+				if (procPath[i] == '\\')
 				{
 					pos = i;
 				}
 			}
-			return pos != -1 ? &procName[pos + 1] : wstrUnknown;
+			
+			if (pos == -1)
+			{
+				return wstrUnknown;
+			}
+			else
+			{
+				WCHAR *procName = &procPath[pos + 1];
+
+				if (procName[0] == 0)
+				{
+					return wstrUnknown;
+				}
+				else
+				{
+					return procName;
+				}
+			}
 		}
 		CloseHandle(hTH);
 	}

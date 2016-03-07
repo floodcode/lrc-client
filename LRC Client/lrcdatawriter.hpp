@@ -5,7 +5,7 @@
 #include <string>
 #include <list>
 
-namespace lrcdata
+namespace LRCData
 {
 	class LRCDataWriter
 	{

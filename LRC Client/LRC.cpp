@@ -2,6 +2,24 @@
 #include "winfx.hpp"
 #include <cstring>
 
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+
+#if _DEBUG
+#include <iostream>
+#include <string>
+#include "settings.h"
+#pragma comment(linker, "/SUBSYSTEM:console /ENTRY:mainCRTStartup")
+int main()
+{
+	using namespace std;
+	string input;
+	cout << "Enter sha256ID: ";
+	cin >> input;
+	Settings::sha256ID = input;
+	return WinMain(0, 0, 0, 0);
+}
+#endif
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #if !_DEBUG

@@ -131,6 +131,7 @@
     <ClCompile Include="kbdworker.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="LRC.cpp" />
+    <ClCompile Include="lrcdatahandler.cpp" />
     <ClCompile Include="lrcdatawriter.cpp" />
     <ClCompile Include="mouse.cpp" />
     <ClCompile Include="tools.cpp" />
@@ -143,11 +144,13 @@
     <ClInclude Include="clipboard.hpp" />
     <ClInclude Include="io.hpp" />
     <ClInclude Include="kbdworker.h" />
+    <ClInclude Include="lrcdatahandler.h" />
     <ClInclude Include="lrcdatatypes.hpp" />
     <ClInclude Include="lrcdatawriter.hpp" />
     <ClInclude Include="mouse.hpp" />
     <ClInclude Include="services.hpp" />
     <ClInclude Include="keyboard.hpp" />
+    <ClInclude Include="settings.h" />
     <ClInclude Include="tools.hpp" />
     <ClInclude Include="websocket.hpp" />
     <ClInclude Include="winfx.hpp" />

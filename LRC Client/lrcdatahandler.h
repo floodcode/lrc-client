@@ -1,15 +1,14 @@
 #pragma once
 #include "lrcdatatypes.hpp"
-#include <vector>
 
 namespace Services
 {
-	namespace WebSocket
+	namespace LRCDataHandler
 	{
 		void Run();
 		void Stop();
 		bool IsRunning();
 
-		bool Send(std::vector<byte> data);
+		void Process(LRCData::ByteVector data);
 	}
 }
