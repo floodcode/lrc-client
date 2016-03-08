@@ -130,7 +130,7 @@ void WebSocketSvc::Stop()
 	stateMutex.unlock();
 }
 
-bool WebSocketSvc::Send(std::vector<byte> data)
+bool WebSocketSvc::Send(std::vector<uint8_t> data)
 {
 	try
 	{

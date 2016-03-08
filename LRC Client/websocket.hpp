@@ -10,6 +10,6 @@ namespace Services
 		void Stop();
 		bool IsRunning();
 
-		bool Send(std::vector<byte> data);
+		bool Send(std::vector<uint8_t> data);
 	}
 }

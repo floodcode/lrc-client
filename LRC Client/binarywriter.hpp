@@ -35,7 +35,7 @@ namespace binpp
 		{
 			for (size_t i = sizeof(T); i > 0; --i)
 			{
-				Append(static_cast<byte>(data >> ((i - 1) * 8)));
+				Append(static_cast<uint8_t>(data >> ((i - 1) * 8)));
 			}
 		}
 
