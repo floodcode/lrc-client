@@ -1,4 +1,4 @@
-#include "lrcdatahandler.h"
+#include "lrcdatahandler.hpp"
 #include "websocket.hpp"
 
 #include <atomic>
@@ -40,17 +40,17 @@ namespace
 				dataQueueMutex.unlock();
 
 				// Dump data
-				std::ofstream output("dump.bin", std::ios::trunc);
+				std::ofstream output("dump.bin", std::ios::trunc | std::ios::out | std::ios::binary);
 
 				if (output.is_open())
 				{
-					output.write((const char *)data.data(), data.size());
+					output.write((const char*)data.data(), data.size());
 					output.close();
 				}
 				
 				// Send data
 				std::cout << "[WebSocket] Sending data (" << data.size() << " bytes)" << std::endl;
-				bool isDataSent = WebSocket::Send(data);
+				bool isDataSent = WebSocketSvc::Send(data);
 				std::cout << "[WebSocket] " << (isDataSent ? "Data was successfully sent" : "Data wasn't sent") << std::endl;
 
 				if (!isDataSent)

@@ -2,36 +2,49 @@
 
 #if SERVICE_CLIPBOARD_ENABLED
 
+#include <atomic>
+#include <mutex>
+
 using namespace Services;
 
 namespace
 {
-	bool isRunning = false;
+	std::atomic_bool isRunning = false;
+
+	std::mutex stateMutex;
 }
 
-void Clipboard::Run()
+void ClipboardSvc::Run()
 {
-	if (isRunning)
+	stateMutex.lock();
+
+	if (isRunning.load())
 	{
 		return;
 	}
 
-	isRunning = true;
+	isRunning.store(true);
+
+	stateMutex.unlock();
 }
 
-void Clipboard::Stop()
+void ClipboardSvc::Stop()
 {
-	if (!isRunning)
+	stateMutex.lock();
+
+	if (!isRunning.load())
 	{
 		return;
 	}
 
-	isRunning = false;
+	isRunning.store(false);
+
+	stateMutex.unlock();
 }
 
-bool Clipboard::IsRunning()
+bool ClipboardSvc::IsRunning()
 {
-	return isRunning;
+	return isRunning.load();
 }
 
 #endif

@@ -2,7 +2,7 @@
 
 namespace Services
 {
-	namespace Clipboard
+	namespace ClipboardSvc
 	{
 		void Run();
 		void Stop();

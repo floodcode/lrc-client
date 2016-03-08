@@ -1,16 +1,14 @@
 #ifndef LRCDATA_LRCDATATYPES
 #define LRCDATA_LRCDATATYPES
-#define LRCDATA_KEYBOARD_SUBTYPE_VKINFO 0x1
-#define LRCDATA_KEYBOARD_SUBTYPE_WNDINFO 0x2
 #define LRCDATA_HEADER_SIZE 0x48
-#include "binpptypes.hpp"
 #include <vector>
+#include <list>
 #include <string>
 #include <cstdint>
 
 namespace LRCData
 {
-	typedef std::vector<byte> ByteVector;
+	typedef std::vector<uint8_t> ByteVector;
 
 	enum Type
 	{
@@ -38,18 +36,17 @@ namespace LRCData
 	struct WNDInfo
 	{
 		uint32_t time;
-		std::wstring processName;
+		std::wstring process;
 		std::wstring title;
 	};
 
-	struct PartKeyboard
+	struct Keyboard
 	{
-		uint8_t subtype;
-		VKInfo vkInfo;
 		WNDInfo wndInfo;
+		std::list<VKInfo> keys;
 	};
 
-	struct PartClipboard
+	struct Clipboard
 	{
 		WNDInfo wndInfo;
 		std::wstring data;

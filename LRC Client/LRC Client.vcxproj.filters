@@ -76,9 +76,6 @@
     <ClInclude Include="binarywriter.hpp">
       <Filter>Libraries</Filter>
     </ClInclude>
-    <ClInclude Include="binpptypes.hpp">
-      <Filter>Libraries</Filter>
-    </ClInclude>
     <ClInclude Include="lrcdatatypes.hpp">
       <Filter>Libraries</Filter>
     </ClInclude>
@@ -88,14 +85,14 @@
     <ClInclude Include="wsclient.hpp">
       <Filter>Libraries</Filter>
     </ClInclude>
-    <ClInclude Include="lrcdatahandler.h">
-      <Filter>Services</Filter>
-    </ClInclude>
-    <ClInclude Include="kbdworker.h">
-      <Filter>Services</Filter>
-    </ClInclude>
-    <ClInclude Include="settings.h">
+    <ClInclude Include="settings.hpp">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="kbdworker.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="lrcdatahandler.hpp">
+      <Filter>Services</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

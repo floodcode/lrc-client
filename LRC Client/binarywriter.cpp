@@ -4,14 +4,14 @@ binpp::BinaryWriter::BinaryWriter()
 {
 	this->sz = 0;
 	this->cp = this->defaultCapacity;
-	data = new byte[this->cp];
+	data = new uint8_t[this->cp];
 }
 
 binpp::BinaryWriter::BinaryWriter(size_t cp)
 {
 	this->sz = 0;
 	this->cp = cp;
-	data = new byte[cp];
+	data = new uint8_t[cp];
 }
 
 binpp::BinaryWriter::~BinaryWriter()
@@ -19,7 +19,7 @@ binpp::BinaryWriter::~BinaryWriter()
 	delete[] data;
 }
 
-void binpp::BinaryWriter::Append(byte data)
+void binpp::BinaryWriter::Append(uint8_t data)
 {
 	if (this->cp == this->sz)
 	{
@@ -30,7 +30,7 @@ void binpp::BinaryWriter::Append(byte data)
 	this->sz++;
 }
 
-void binpp::BinaryWriter::GetBytes(byte *out, size_t count)
+void binpp::BinaryWriter::GetBytes(uint8_t *out, size_t count)
 {
 	if (count > this->sz)
 	{
@@ -54,7 +54,7 @@ void binpp::BinaryWriter::Clear(size_t capacity)
 	delete[] this->data;
 	this->cp = capacity;
 	this->sz = 0;
-	data = new byte[this->cp];
+	data = new uint8_t[this->cp];
 }
 
 bool binpp::BinaryWriter::Save(std::string filename)
@@ -82,10 +82,28 @@ size_t binpp::BinaryWriter::Capacity()
 	return this->cp;
 }
 
+uint8_t *binpp::BinaryWriter::Data()
+{
+	return this->data;
+}
+
+std::vector<uint8_t> binpp::BinaryWriter::GetData()
+{
+	std::vector<uint8_t> result;
+	result.reserve(this->sz);
+
+	for (size_t i = 0; i < sz; ++i)
+	{
+		result.push_back(data[i]);
+	}
+
+	return result;
+}
+
 void binpp::BinaryWriter::increaseCapacity()
 {
-	byte *oldData = data;
-	data = new byte[this->cp * 2];
+	uint8_t *oldData = data;
+	data = new uint8_t[this->cp * 2];
 	for (size_t i = 0; i < this->cp; ++i)
 	{
 		data[i] = oldData[i];

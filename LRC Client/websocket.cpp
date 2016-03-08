@@ -4,9 +4,13 @@
 
 #include "winfx.hpp"
 #include "wsclient.hpp"
+#include "settings.hpp"
+
 #include <thread>
 #include <mutex>
 #include <atomic>
+
+#include <iostream>
 
 using namespace Services;
 using wsclient::WebSocketClient;
@@ -26,30 +30,38 @@ namespace
 	std::mutex wsSendMutex;
 
 	// Thread-safely send text messasge to WebSocket server
-	void send(const std::string &message)
+	bool send(const std::string &message)
 	{
+		bool isSent = false;
 		wsSendMutex.lock();
-		if (ws->getReadyState() == WebSocketClient::OPEN)
+		if (isConnected.load() && ws->getReadyState() == WebSocketClient::OPEN)
 		{
 			ws->send(message);
+			isSent = true;
 		}
 		wsSendMutex.unlock();
+		return isSent;
 	}
 
 	// Thread-safely send binary message to WebSocket server
-	void sendBinary(std::vector<byte> message)
+	bool sendBinary(std::vector<byte> message)
 	{
+		bool isSent = false;
 		wsSendMutex.lock();
-		if (ws->getReadyState() == WebSocketClient::OPEN)
+		if (isConnected.load() && ws->getReadyState() == WebSocketClient::OPEN)
 		{
 			ws->sendBinary(message);
+			isSent = true;
 		}
 		wsSendMutex.unlock();
+		return isSent;
 	}
 
 	// Receiving incoming messages
 	void handlemessage(const std::string &message)
 	{
+		std::cout << "[WerSocket][Server]: " << message << std::endl;
+
 		// TODO: Pass message to command handler
 		// send("Accepted - " + message);
 	}
@@ -57,14 +69,14 @@ namespace
 	// Try connect to WebSocket server
 	bool tryconnect()
 	{
-		ws = WebSocketClient::from_url(WS_HOST);
+		ws = WebSocketClient::from_url(Settings::WebSocketSvc::host);
 		return ws != NULL;
 	}
 
 	// Automaticly connects to server and accepts incoming messages
 	void worker()
 	{
-		while (isRunning)
+		while (isRunning.load())
 		{
 			isConnected = tryconnect();
 			if (isConnected)
@@ -79,13 +91,13 @@ namespace
 			}
 			else
 			{
-				Sleep(1000 * WS_CONNECTION_DELAY_SEC);
+				Sleep(1000 * Settings::WebSocketSvc::connectionDelay);
 			}
 		}
 	}
 }
 
-void WebSocket::Run()
+void WebSocketSvc::Run()
 {
 	stateMutex.lock();
 
@@ -93,6 +105,7 @@ void WebSocket::Run()
 	{
 		return;
 	}
+
 	isRunning.store(true);
 
 	rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -101,7 +114,7 @@ void WebSocket::Run()
 	stateMutex.unlock();
 }
 
-void WebSocket::Stop()
+void WebSocketSvc::Stop()
 {
 	stateMutex.lock();
 
@@ -112,17 +125,16 @@ void WebSocket::Stop()
 
 	wsWorkerThread.join();
 	WSACleanup();
-	isRunning = false;
+	isRunning.store(false);
 
 	stateMutex.unlock();
 }
 
-bool WebSocket::Send(std::vector<byte> data)
+bool WebSocketSvc::Send(std::vector<byte> data)
 {
 	try
 	{
-		sendBinary(data);
-		return true;
+		return sendBinary(data);
 	}
 	catch (...)
 	{
@@ -130,9 +142,9 @@ bool WebSocket::Send(std::vector<byte> data)
 	}
 }
 
-bool WebSocket::IsRunning()
+bool WebSocketSvc::IsRunning()
 {
-	return isRunning;
+	return isRunning.load();
 }
 
 #endif // SERVICE_WEBSOCKET_ENABLED

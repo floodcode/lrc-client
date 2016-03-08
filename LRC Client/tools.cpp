@@ -9,7 +9,7 @@ LRCData::WNDInfo tools::GetWNDInfo(HWND hwnd)
 	LRCData::WNDInfo result;
 	result.time = static_cast<uint32_t>(time(0));
 	result.title.append(GetWNDTitle(hwnd));
-	result.processName.append(GetWNDProcName(hwnd));
+	result.process.append(GetWNDProcName(hwnd));
 	return result;
 }
 

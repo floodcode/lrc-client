@@ -3,16 +3,20 @@
 #if SERVICE_MOUSE_ENABLED
 
 #include "winfx.hpp"
-#include "lrcdatatypes.hpp"
 #include "tools.hpp"
+
+#include <atomic>
+#include <mutex>
 
 using namespace Services;
 
 namespace
 {
-	static bool isRunning = false;
+	std::atomic_bool isRunning = false;
 
-	static HHOOK hhkLowLevelMouse = NULL;
+	std::mutex stateMutex;
+
+	HHOOK hhkLowLevelMouse = NULL;
 
 	LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
@@ -26,6 +30,7 @@ namespace
 				break;
 			case WM_RBUTTONDOWN:
 				// Right mouse button down
+				KeyboardWorker::Add(tools::GetWNDInfo(GetForegroundWindow()));
 				break;
 			}
 		}
@@ -34,9 +39,11 @@ namespace
 	}
 }
 
-void Services::Mouse::Run()
+void MouseSvc::Run()
 {
-	if (isRunning)
+	stateMutex.lock();
+
+	if (isRunning.load())
 	{
 		return;
 	}
@@ -46,12 +53,15 @@ void Services::Mouse::Run()
 		hhkLowLevelMouse = SetWindowsHookExW(WH_MOUSE_LL, LowLevelMouseProc, NULL, NULL);
 	}
 
+	isRunning.store(true);
 
-	isRunning = true;
+	stateMutex.unlock();
 }
 
-void Services::Mouse::Stop()
+void MouseSvc::Stop()
 {
+	stateMutex.lock();
+
 	if (!isRunning)
 	{
 		return;
@@ -64,6 +74,13 @@ void Services::Mouse::Stop()
 	}
 
 	isRunning = false;
+
+	stateMutex.unlock();
+}
+
+bool MouseSvc::IsRunning()
+{
+	return isRunning.load();
 }
 
 #endif // SERVICE_MOUSE_ENABLED

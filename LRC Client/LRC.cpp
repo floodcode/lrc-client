@@ -7,15 +7,17 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 #if _DEBUG
 #include <iostream>
 #include <string>
-#include "settings.h"
+#include "settings.hpp"
 #pragma comment(linker, "/SUBSYSTEM:console /ENTRY:mainCRTStartup")
 int main()
 {
+	/*
 	using namespace std;
 	string input;
 	cout << "Enter sha256ID: ";
 	cin >> input;
 	Settings::sha256ID = input;
+	*/
 	return WinMain(0, 0, 0, 0);
 }
 #endif

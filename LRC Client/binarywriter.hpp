@@ -1,7 +1,7 @@
 #ifndef BINPP_BINARYWRITER
 #define BINPP_BINARYWRITER
-#include "binpptypes.hpp"
 #include <string>
+#include <vector>
 #include <fstream>
 
 namespace binpp
@@ -12,13 +12,23 @@ namespace binpp
 		BinaryWriter();
 		BinaryWriter(size_t cp);
 		~BinaryWriter();
-		void Append(byte data);
-		void GetBytes(byte *out, size_t count);
+		void Append(uint8_t data);
+		void GetBytes(uint8_t *out, size_t count);
 		void Clear();
 		void Clear(size_t capacity);
 		bool Save(std::string filename);
 		size_t Size();
 		size_t Capacity();
+		uint8_t *Data();
+		std::vector<uint8_t> GetData();
+
+		void AppendBytes(std::vector<uint8_t> data)
+		{
+			for each (uint8_t b in data)
+			{
+				Append(b);
+			}
+		}
 
 		template<typename T>
 		void Append(T data)
@@ -40,7 +50,7 @@ namespace binpp
 
 	private:
 		static const size_t defaultCapacity = 128;
-		byte *data;
+		uint8_t *data;
 		size_t cp;
 		size_t sz;
 		void increaseCapacity();

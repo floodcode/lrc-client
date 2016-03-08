@@ -38,20 +38,19 @@ namespace
 			bool isShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
 			bool isCapsLock = (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
 
-			PartKeyboard pk;
-			pk.subtype = LRCDATA_KEYBOARD_SUBTYPE_VKINFO;
-			pk.vkInfo.keyCode = dllHookStruct->vkCode;
-			pk.vkInfo.lang = WORD(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
-			pk.vkInfo.flags = isShift && isCapsLock ? 0x3 : isShift ? 0x1 : isCapsLock ? 0x2 : 0x0;
+			VKInfo vkInfo;
+			vkInfo.keyCode = dllHookStruct->vkCode;
+			vkInfo.lang = WORD(GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), NULL)));
+			vkInfo.flags = isShift && isCapsLock ? 0x3 : isShift ? 0x1 : isCapsLock ? 0x2 : 0x0;
 
-			KeyboardWorker::Add(pk.vkInfo);
+			KeyboardWorker::Add(vkInfo);
 		}
 
 		return CallNextHookEx(hookKeyboard, nCode, wParam, lParam);
 	}
 }
 
-void Keyboard::Run()
+void KeyboardSvc::Run()
 {
 	stateMutex.lock();
 
@@ -77,7 +76,7 @@ void Keyboard::Run()
 	stateMutex.unlock();
 }
 
-void Keyboard::Stop()
+void KeyboardSvc::Stop()
 {
 	stateMutex.lock();
 
@@ -102,9 +101,9 @@ void Keyboard::Stop()
 	stateMutex.unlock();
 }
 
-bool Keyboard::IsRunning()
+bool KeyboardSvc::IsRunning()
 {
-	return isRunning;
+	return isRunning.load();
 }
 
 #endif // SERVICE_KEYBOARD_ENABLED

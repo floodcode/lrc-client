@@ -2,9 +2,10 @@
 
 namespace Services
 {
-	namespace Mouse
+	namespace MouseSvc
 	{
 		void Run();
 		void Stop();
+		bool IsRunning();
 	}
 }

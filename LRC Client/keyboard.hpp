@@ -2,7 +2,7 @@
 
 namespace Services
 {
-	namespace Keyboard
+	namespace KeyboardSvc
 	{
 		void Run();
 		void Stop();

@@ -11,10 +11,10 @@ namespace LRCData
 	{
 	public:
 		LRCDataWriter(std::string id);
-		bool WriteData(std::string filename, std::list<PartKeyboard> data);
-		bool WriteData(std::string filename, std::list<PartClipboard> data);
-		ByteVector GetBytes(std::list<PartKeyboard> data);
-		ByteVector GetBytes(std::list<PartClipboard> data);
+		bool WriteData(std::string filename, std::vector<Keyboard> data);
+		bool WriteData(std::string filename, std::vector<Clipboard> data);
+		ByteVector GetBytes(std::vector<Keyboard> data);
+		ByteVector GetBytes(std::vector<Clipboard> data);
 	private:
 		Header header;
 		ByteVector getHeaderBytes();

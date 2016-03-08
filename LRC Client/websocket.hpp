@@ -4,7 +4,7 @@
 
 namespace Services
 {
-	namespace WebSocket
+	namespace WebSocketSvc
 	{
 		void Run();
 		void Stop();

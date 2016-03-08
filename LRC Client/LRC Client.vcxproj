@@ -140,17 +140,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="binarywriter.hpp" />
-    <ClInclude Include="binpptypes.hpp" />
     <ClInclude Include="clipboard.hpp" />
     <ClInclude Include="io.hpp" />
-    <ClInclude Include="kbdworker.h" />
-    <ClInclude Include="lrcdatahandler.h" />
+    <ClInclude Include="kbdworker.hpp" />
+    <ClInclude Include="lrcdatahandler.hpp" />
     <ClInclude Include="lrcdatatypes.hpp" />
     <ClInclude Include="lrcdatawriter.hpp" />
     <ClInclude Include="mouse.hpp" />
     <ClInclude Include="services.hpp" />
     <ClInclude Include="keyboard.hpp" />
-    <ClInclude Include="settings.h" />
+    <ClInclude Include="settings.hpp" />
     <ClInclude Include="tools.hpp" />
     <ClInclude Include="websocket.hpp" />
     <ClInclude Include="winfx.hpp" />
