@@ -36,14 +36,14 @@ Data inside this block depends on `type` parameter of `header`.
 | Type | Name | Description |
 | --- | --- | --- |
 | [U32](#primitive-types) | *count* | Number of items |
-| [Keyboard[count]](#keyboard) | *items* | Array of `Keyboard` items |
+| [Keyboard[count]](#keyboard) | *items* | Array of `Keyboard` objects |
 
 ###### 0x02 - Clipboard:
 
 | Type | Name | Description |
 | --- | --- | --- |
 | [U32](#primitive-types) | *count* | Number of items |
-| [Clipboard\[count\]](#clipboard) | *items* | Array of `Clipboard` items |
+| [Clipboard\[count\]](#clipboard) | *items* | Array of `Clipboard` objects |
 
 ## Keyboard
 
@@ -51,7 +51,7 @@ Data inside this block depends on `type` parameter of `header`.
 | --- | --- | --- |
 | [WNDInfo](#wndinfo) | *wndInfo* | Information about window |
 | [U32](#primitive-types) | *count* | Number of keys |
-| [VKInfo\[count\]](#vkinfo) | *keys* | Array of VKInfo objects |
+| [VKInfo\[count\]](#vkinfo) | *keys* | Array of `VKInfo` objects |
 
 ## Clipboard
 
