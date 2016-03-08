@@ -43,15 +43,15 @@ Data inside this block depends on `type` parameter of `header`.
 | Type | Name | Description |
 | --- | --- | --- |
 | [U32](#primitive-types) | *count* | Number of items |
-| [Clipboard[count]](#clipboard) | *items* | Array of `Clipboard` items |
+| [Clipboard\[count\]](#clipboard) | *items* | Array of `Clipboard` items |
 
 ## Keyboard
 
-| Type | Name | Description | Condition |
-| --- | --- | --- | :---: |
-| [U8](#primitive-types) | *subtype* | Subtype of `Keyboard` item | `true` |
-| [VKInfo](#vkinfo) | *vkInfo* | Virtual-Key information | `subtype == 0x1` |
-| [WNDInfo](#wndinfo) | *wndInfo* | Information about window | `subtype == 0x2` |
+| Type | Name | Description |
+| --- | --- | --- |
+| [WNDInfo](#wndinfo) | *wndInfo* | Information about window |
+| [U32](#primitive-types) | *count* | Number of keys |
+| [VKInfo\[count\]](#vkinfo) | *keys* | Array of VKInfo objects |
 
 ## Clipboard
 
