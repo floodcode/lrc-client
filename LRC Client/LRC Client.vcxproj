@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClCompile Include="binarywriter.cpp" />
     <ClCompile Include="clipboard.cpp" />
+    <ClCompile Include="hwinfo.cpp" />
     <ClCompile Include="io.cpp" />
     <ClCompile Include="kbdworker.cpp" />
     <ClCompile Include="keyboard.cpp" />
@@ -141,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="binarywriter.hpp" />
     <ClInclude Include="clipboard.hpp" />
+    <ClInclude Include="hwinfo.hpp" />
     <ClInclude Include="io.hpp" />
     <ClInclude Include="kbdworker.hpp" />
     <ClInclude Include="lrcdatahandler.hpp" />

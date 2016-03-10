@@ -4,20 +4,20 @@
     <Filter Include="Services">
       <UniqueIdentifier>{ea75761c-682e-450c-b0bb-210fe6bc8101}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Libraries">
       <UniqueIdentifier>{369784de-fcdf-4dad-b863-f72d02e711e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="io.cpp">
-      <Filter>Main</Filter>
+      <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="tools.cpp">
-      <Filter>Main</Filter>
+      <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="keyboard.cpp">
       <Filter>Services</Filter>
@@ -47,6 +47,9 @@
     <ClCompile Include="lrcdatahandler.cpp">
       <Filter>Services</Filter>
     </ClCompile>
+    <ClCompile Include="hwinfo.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="keyboard.hpp">
@@ -62,16 +65,16 @@
       <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="io.hpp">
-      <Filter>Main</Filter>
+      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="services.hpp">
-      <Filter>Main</Filter>
+      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="tools.hpp">
-      <Filter>Main</Filter>
+      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="winfx.hpp">
-      <Filter>Main</Filter>
+      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="binarywriter.hpp">
       <Filter>Libraries</Filter>
@@ -86,13 +89,16 @@
       <Filter>Libraries</Filter>
     </ClInclude>
     <ClInclude Include="settings.hpp">
-      <Filter>Main</Filter>
+      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="kbdworker.hpp">
       <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="lrcdatahandler.hpp">
       <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="hwinfo.hpp">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
