@@ -42,7 +42,12 @@ namespace LRCData
 		{
 			throw "ID length should be 64!";
 		}
-		strcpy_s(header.id, 65, id.c_str());
+
+		for (size_t i = 0; i < 64; ++i)
+		{
+			header.id[i] = static_cast<uint8_t>(id[i]);
+		}
+
 		header.type = 0x0;
 	}
 
@@ -54,6 +59,7 @@ namespace LRCData
 		// data.count
 		writer.Append<uint32_t>(data.size());
 
+		// data.items[n]
 		for each (Keyboard kbd in data)
 		{
 			// data.items[n].wndInfo
@@ -64,7 +70,7 @@ namespace LRCData
 			// data.items[n].count
 			writer.Append<uint32_t>(kbd.keys.size());
 
-			// for each 'vkInfo' in data.items[n].keys[count]
+			// data.items[n].keys[n]
 			for each (VKInfo vkInfo in kbd.keys)
 			{
 				// data.items[n].keys[n]
@@ -88,51 +94,33 @@ namespace LRCData
 
 	ByteVector LRCDataWriter::GetBytes(std::vector<Clipboard> data)
 	{
-		ByteVector dataBlock(getBytes(data.size()));
+		binpp::BinaryWriter writer;
 
-		for (std::vector<Clipboard>::iterator it = data.begin(); it != data.end(); ++it)
+		// data.count
+		writer.Append<uint32_t>(data.size());
+
+		// data.items[n]
+		for each (Clipboard cbd in data)
 		{
-			ByteVector bvResult;
+			// data.items[n].wndInfo
+			writer.Append<uint32_t>(cbd.wndInfo.time);
+			writer.AppendBytes(getStrBytes(cbd.wndInfo.process));
+			writer.AppendBytes(getStrBytes(cbd.wndInfo.title));
 
-			ByteVector bvTime = getBytes(it->wndInfo.time);
-			ByteVector btProcessName = getStrBytes(it->wndInfo.process);
-			ByteVector bvTitle = getStrBytes(it->wndInfo.title);
-			ByteVector bvData = getStrBytes(it->data);
-
-			std::copy(bvTime.begin(), bvTime.end(), std::back_inserter(bvResult));
-			std::copy(btProcessName.begin(), btProcessName.end(), std::back_inserter(bvResult));
-			std::copy(bvTitle.begin(), bvTitle.end(), std::back_inserter(bvResult));
-			std::copy(bvData.begin(), bvData.end(), std::back_inserter(bvResult));
-
-			std::copy(bvResult.begin(), bvResult.end(), std::back_inserter(dataBlock));
+			// data.items[n].data
+			writer.AppendBytes(getStrBytes(cbd.data));
 		}
 
+		ByteVector bvData = writer.GetData();
+
 		header.type = 0x02;
-		header.length = dataBlock.size();
+		header.length = bvData.size();
 
 		ByteVector bvResult = getHeaderBytes();
-		std::copy(dataBlock.begin(), dataBlock.end(), std::back_inserter(bvResult));
+
+		std::copy(bvData.begin(), bvData.end(), std::back_inserter(bvResult));
+
 		return bvResult;
-	}
-
-	bool LRCDataWriter::WriteData(std::string filename, std::vector<Keyboard> data)
-	{
-		ByteVector bvData = GetBytes(data);
-
-		binpp::BinaryWriter writer;
-		writer.Append(bvData.data(), bvData.size());
-		
-		return writer.Save(filename);
-	}
-
-	bool LRCDataWriter::WriteData(std::string filename, std::vector<Clipboard> data)
-	{
-		ByteVector bvData = GetBytes(data);
-
-		binpp::BinaryWriter writer;
-		writer.Append(bvData.data(), bvData.size());
-
-		return writer.Save(filename);
 	}
 
 	ByteVector LRCDataWriter::getHeaderBytes()

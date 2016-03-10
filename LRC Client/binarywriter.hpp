@@ -13,6 +13,7 @@ namespace binpp
 		BinaryWriter(size_t cp);
 		~BinaryWriter();
 		void Append(uint8_t data);
+		void AppendBytes(std::vector<uint8_t> data);
 		void GetBytes(uint8_t *out, size_t count);
 		void Clear();
 		void Clear(size_t capacity);
@@ -21,14 +22,6 @@ namespace binpp
 		size_t Capacity();
 		uint8_t *Data();
 		std::vector<uint8_t> GetData();
-
-		void AppendBytes(std::vector<uint8_t> data)
-		{
-			for each (uint8_t b in data)
-			{
-				Append(b);
-			}
-		}
 
 		template<typename T>
 		void Append(T data)

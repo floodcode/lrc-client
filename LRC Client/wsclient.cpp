@@ -437,7 +437,8 @@ namespace
 			}
 		}
 
-		void close() {
+		void close()
+		{
 			if (readyState == CLOSING || readyState == CLOSED) { return; }
 			readyState = CLOSING;
 			uint8_t closeFrame[6] = { 0x88, 0x80, 0x00, 0x00, 0x00, 0x00 }; // last 4 bytes are a masking key

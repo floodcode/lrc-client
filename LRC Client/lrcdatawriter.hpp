@@ -11,8 +11,6 @@ namespace LRCData
 	{
 	public:
 		LRCDataWriter(std::string id);
-		bool WriteData(std::string filename, std::vector<Keyboard> data);
-		bool WriteData(std::string filename, std::vector<Clipboard> data);
 		ByteVector GetBytes(std::vector<Keyboard> data);
 		ByteVector GetBytes(std::vector<Clipboard> data);
 	private:
