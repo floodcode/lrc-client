@@ -15,7 +15,7 @@ Server communicates with Client by sending string commands. Once client accepts 
 | [U16](#primitive-types) | *signature* | 0x0000 | Signature of LRCDATA file (always should be 0x539) |
 | [U8](#primitive-types) | *version* | 0x0002 | Version of LRCDATA file (current is 0x1) |
 | [S8\[64\]](#primitive-types) | *id* | 0x0003 | Unique identifier of user |
-| [S8](#primitive-types) | *type* | 0x0043 | Type of data (0x0 - 0x2) |
+| [S8](#primitive-types) | *type* | 0x0043 | Type of data (0x0 - 0x3) |
 | [U32](#primitive-types) | *length* | 0x0044 | Length of DATA block in bytes |
 
 ## Data
@@ -44,6 +44,14 @@ Data inside this block depends on `type` parameter of `header`.
 | --- | --- | --- |
 | [U32](#primitive-types) | *count* | Number of items |
 | [Clipboard\[count\]](#clipboard) | *items* | Array of `Clipboard` objects |
+
+###### 0x03 - Screenshot:
+
+| Type | Name | Description |
+| --- | --- | --- |
+| [WNDInfo](#wndinfo) | *wndInfo* | Information about window, where screenshot was done |
+| [U32](#primitive-types) | *length* | Length of screenshot data |
+| [S8\[length\]](#primitive-types) | *data* | Screenshot data (.bmp format) |
 
 ## Keyboard
 
