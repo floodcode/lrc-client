@@ -26,6 +26,8 @@ typedef SOCKET socket_t;
 #define SOCKET_EAGAIN_EINPROGRESS WSAEINPROGRESS
 #define SOCKET_EWOULDBLOCK WSAEWOULDBLOCK
 
+#include <iostream>
+
 #include <vector>
 #include <string>
 
@@ -366,7 +368,7 @@ namespace
 			// Masking key should (must) be derived from a high quality random
 			// number generator, to mitigate attacks on non-WebSocket friendly
 			// middleware:
-			const uint8_t masking_key[4] = { 0x12, 0x34, 0x56, 0x78 };
+			const uint8_t masking_key[4] = { 0x0, 0x0, 0x0, 0x0 };
 			// TODO: consider acquiring a lock on txbuf...
 			if (readyState == CLOSING || readyState == CLOSED) { return; }
 			std::vector<uint8_t> header;
@@ -419,22 +421,19 @@ namespace
 			// N.B. - txbuf will keep growing until it can be transmitted over the socket:
 			txbuf.insert(txbuf.end(), header.begin(), header.end());
 			txbuf.insert(txbuf.end(), message_begin, message_end);
+
+			// Bug! Bug! Bug!
+			// Let's skip it. Why not?
+			/*
 			if (useMask)
 			{
-				// Bug! Bug! Bug!
-				// Let's skip it. Why not?
-				try
+				for (size_t i = 0; i != message_size; ++i)
 				{
-					for (size_t i = 0; i != message_size; ++i)
-					{
-						*(txbuf.end() - message_size + i) ^= masking_key[i & 0x3];
-					}
-				}
-				catch (...)
-				{
-					// Lel. Do nothing.
+					*(txbuf.end() - message_size + i) ^= masking_key[i & 0x3];
 				}
 			}
+			*/
+
 		}
 
 		void close()

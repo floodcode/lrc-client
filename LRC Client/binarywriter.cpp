@@ -76,7 +76,7 @@ bool BinaryWriter::Save(std::string filename)
 	}
 	else
 	{
-		output.write((char *)this->data, this->sz);
+		output.write(reinterpret_cast<char*>(this->data), this->sz);
 		output.close();
 		return true;
 	}

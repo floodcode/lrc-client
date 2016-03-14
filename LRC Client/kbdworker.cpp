@@ -31,7 +31,7 @@ namespace
 
 	std::atomic_bool isRunning;
 
-	std::vector<Keyboard> kbdVector;
+	std::vector<Keyboard> kbdVector(Settings::KeyboardSvc::eventsToProcess);
 	Keyboard pendingKeyboard;
 
 	std::queue<KeyBundle> keyBundleQueue;
@@ -40,6 +40,8 @@ namespace
 	std::mutex keyBundleQueueMutex;
 
 	std::thread queueWorkerThread;
+
+	size_t kbdVectorCursor;
 
 	size_t pkListCursorBegin;
 	size_t pkListCursor;
@@ -73,6 +75,8 @@ namespace
 
 	void init()
 	{
+		kbdVectorCursor = 0;
+
 		pkListCursorBegin = 0;
 		pkListCursor = 0;
 
@@ -83,8 +87,6 @@ namespace
 		lastVKInfo.flags = 0;
 
 		pendingKeyboard.wndInfo = tools::GetWNDInfo(GetForegroundWindow());
-
-		kbdVector.clear();
 	}
 
 	void saveList()
@@ -123,13 +125,6 @@ namespace
 
 	void processVKInfo(VKInfo vkInfo)
 	{
-		if (kbdVector.size() == 0)
-		{
-			Keyboard kbd;
-			kbd.wndInfo = tools::GetWNDInfo(GetForegroundWindow());
-			kbdVector.push_back(kbd);
-		}
-
 		// Filter virtual-key repeats
 		if (VKInfoCmp(vkInfo, lastVKInfo))
 		{
@@ -164,9 +159,10 @@ namespace
 	{
 		if (!WNDInfoCmp(wndInfo, pendingKeyboard.wndInfo))
 		{
-			kbdVector.push_back(pendingKeyboard);
+			kbdVector[kbdVectorCursor] = pendingKeyboard;
+			kbdVectorCursor++;
 
-			if (kbdVector.size() >= Settings::KeyboardSvc::eventsToProcess)
+			if (kbdVectorCursor == Settings::KeyboardSvc::eventsToProcess)
 			{
 				saveList();
 			}

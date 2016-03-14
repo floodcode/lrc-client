@@ -95,5 +95,5 @@ hwinfo::SystemInfo hwinfo::GetSystemInfo()
 	SYSTEM_INFO winSystemInfo;
 	::GetSystemInfo(&winSystemInfo);
 
-
+	return SystemInfo();
 }

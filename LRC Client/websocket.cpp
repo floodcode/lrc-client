@@ -48,10 +48,17 @@ namespace
 	{
 		bool isSent = false;
 		wsSendMutex.lock();
-		if (isConnected.load() && ws->getReadyState() == WebSocketClient::OPEN)
+		try
 		{
-			ws->sendBinary(message);
-			isSent = true;
+			if (ws != NULL && ws->getReadyState() == WebSocketClient::OPEN)
+			{
+				ws->sendBinary(message);
+				isSent = true;
+			}
+		}
+		catch (...)
+		{
+			return false;
 		}
 		wsSendMutex.unlock();
 		return isSent;
@@ -61,15 +68,14 @@ namespace
 	void handlemessage(const std::string &message)
 	{
 		std::cout << "[WerSocket][Server]: " << message << std::endl;
-
-		// TODO: Pass message to command handler
-		// send("Accepted - " + message);
 	}
 
 	// Try connect to WebSocket server
 	bool tryconnect()
 	{
+		wsSendMutex.lock();
 		ws = WebSocketClient::from_url(Settings::WebSocketSvc::host);
+		wsSendMutex.unlock();
 		return ws != NULL;
 	}
 
@@ -109,6 +115,7 @@ void WebSocketSvc::Run()
 	isRunning.store(true);
 
 	rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
+
 	wsWorkerThread = std::thread(worker);
 
 	stateMutex.unlock();
@@ -118,28 +125,22 @@ void WebSocketSvc::Stop()
 {
 	stateMutex.lock();
 
-	if (!isRunning)
+	if (!isRunning.load())
 	{
 		return;
 	}
 
+	isRunning.store(false);
+
 	wsWorkerThread.join();
 	WSACleanup();
-	isRunning.store(false);
 
 	stateMutex.unlock();
 }
 
 bool WebSocketSvc::Send(std::vector<uint8_t> data)
 {
-	try
-	{
-		return sendBinary(data);
-	}
-	catch (...)
-	{
-		return false;
-	}
+	return sendBinary(data);
 }
 
 bool WebSocketSvc::IsRunning()
