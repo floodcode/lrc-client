@@ -82,7 +82,7 @@ namespace LRCData
 
 		ByteVector bvData = writer.GetData();
 
-		header.type = 0x01;
+		header.type = Type::keyboard;
 		header.length = bvData.size();
 
 		ByteVector bvResult = getHeaderBytes();
@@ -113,7 +113,7 @@ namespace LRCData
 
 		ByteVector bvData = writer.GetData();
 
-		header.type = 0x02;
+		header.type = Type::clipboard;
 		header.length = bvData.size();
 
 		ByteVector bvResult = getHeaderBytes();

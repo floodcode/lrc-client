@@ -52,6 +52,7 @@ namespace Services
 
 	static void StopAll()
 	{
+		LRCDataHandler::Stop();
 		KeyboardWorker::Stop();
 
 #if SERVICE_KEYBOARD_ENABLED

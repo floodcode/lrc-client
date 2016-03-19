@@ -14,6 +14,7 @@ namespace LRCData
 
 	enum Type
 	{
+		error = 0x0,
 		keyboard = 0x1,
 		clipboard = 0x2,
 		screenshot = 0x3
