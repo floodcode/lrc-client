@@ -1,6 +1,6 @@
 #ifndef LRCDATA_LRCDATAWRITER
 #define LRCDATA_LRCDATAWRITER
-#include "binarywriter.hpp"
+#include "binbuff.hpp"
 #include "lrcdatatypes.hpp"
 #include <string>
 #include <list>

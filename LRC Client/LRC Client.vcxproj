@@ -125,7 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="binarywriter.cpp" />
+    <ClCompile Include="binbuff.cpp" />
     <ClCompile Include="clipboard.cpp" />
     <ClCompile Include="hwinfo.cpp" />
     <ClCompile Include="io.cpp" />
@@ -140,7 +140,7 @@
     <ClCompile Include="wsclient.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="binarywriter.hpp" />
+    <ClInclude Include="binbuff.hpp" />
     <ClInclude Include="clipboard.hpp" />
     <ClInclude Include="hwinfo.hpp" />
     <ClInclude Include="io.hpp" />

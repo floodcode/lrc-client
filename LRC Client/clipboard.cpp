@@ -19,7 +19,7 @@ namespace
 	std::mutex stateMutex;
 
 	std::wstring cbdClassName;
-	HWND hwnd;
+	HWND hwndClipboard;
 
 	LRESULT CALLBACK CbdWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
@@ -68,7 +68,7 @@ namespace
 		}
 
 		// Creating the Window
-		hwnd = CreateWindowExW(
+		hwndClipboard = CreateWindowExW(
 			NULL,
 			cbdClassName.c_str(),
 			cbdClassName.c_str(),
@@ -76,20 +76,20 @@ namespace
 			CW_USEDEFAULT, CW_USEDEFAULT, 100, 100,
 			HWND_MESSAGE, NULL, NULL, NULL);
 
-		if (hwnd == NULL)
+		if (hwndClipboard == NULL)
 		{
 			UnregisterClassW(cbdClassName.c_str(), NULL);
 			return false;
 		}
 
-		ShowWindow(hwnd, SW_HIDE);
-		UpdateWindow(hwnd);
+		ShowWindow(hwndClipboard, SW_HIDE);
+		UpdateWindow(hwndClipboard);
 
 		// Adding clipboard listener
-		BOOL res = AddClipboardFormatListener(hwnd);
+		BOOL res = AddClipboardFormatListener(hwndClipboard);
 		if (res == FALSE)
 		{
-			DestroyWindow(hwnd);
+			DestroyWindow(hwndClipboard);
 			UnregisterClassW(cbdClassName.c_str(), NULL);
 			return false;
 		}
@@ -104,9 +104,9 @@ namespace
 			return;
 		}
 
-		DestroyWindow(hwnd);
+		RemoveClipboardFormatListener(hwndClipboard);
+		DestroyWindow(hwndClipboard);
 		UnregisterClassW(cbdClassName.c_str(), NULL);
-		RemoveClipboardFormatListener(hwnd);
 		cbdClassName.clear();
 	}
 }

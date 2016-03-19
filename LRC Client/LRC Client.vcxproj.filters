@@ -31,9 +31,6 @@
     <ClCompile Include="mouse.cpp">
       <Filter>Services</Filter>
     </ClCompile>
-    <ClCompile Include="binarywriter.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
     <ClCompile Include="lrcdatawriter.cpp">
       <Filter>Libraries</Filter>
     </ClCompile>
@@ -49,6 +46,9 @@
     </ClCompile>
     <ClCompile Include="hwinfo.cpp">
       <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="binbuff.cpp">
+      <Filter>Libraries</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,9 +76,6 @@
     <ClInclude Include="winfx.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="binarywriter.hpp">
-      <Filter>Libraries</Filter>
-    </ClInclude>
     <ClInclude Include="lrcdatatypes.hpp">
       <Filter>Libraries</Filter>
     </ClInclude>
@@ -99,6 +96,9 @@
     </ClInclude>
     <ClInclude Include="hwinfo.hpp">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="binbuff.hpp">
+      <Filter>Libraries</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

