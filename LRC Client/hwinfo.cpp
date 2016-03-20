@@ -10,6 +10,7 @@ hwinfo::CPUID hwinfo::GetCPUID()
 	unsigned int cpu_feat_ecx = 0;
 	unsigned int cpu_feat_ext_edx = 0;
 
+#if !_WIN64
 	__asm
 	{
 		mov     eax, 0x00000000
@@ -62,6 +63,7 @@ hwinfo::CPUID hwinfo::GetCPUID()
 
 	no_features:
 	}
+#endif
 
 	CPUID result;
 
