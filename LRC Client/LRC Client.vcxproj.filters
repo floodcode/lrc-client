@@ -50,6 +50,9 @@
     <ClCompile Include="binbuff.cpp">
       <Filter>Libraries</Filter>
     </ClCompile>
+    <ClCompile Include="cbdworker.cpp">
+      <Filter>Services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="keyboard.hpp">
@@ -99,6 +102,9 @@
     </ClInclude>
     <ClInclude Include="binbuff.hpp">
       <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="cbdworker.hpp">
+      <Filter>Services</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

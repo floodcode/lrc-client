@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="binbuff.cpp" />
+    <ClCompile Include="cbdworker.cpp" />
     <ClCompile Include="clipboard.cpp" />
     <ClCompile Include="hwinfo.cpp" />
     <ClCompile Include="io.cpp" />
@@ -141,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="binbuff.hpp" />
+    <ClInclude Include="cbdworker.hpp" />
     <ClInclude Include="clipboard.hpp" />
     <ClInclude Include="hwinfo.hpp" />
     <ClInclude Include="io.hpp" />

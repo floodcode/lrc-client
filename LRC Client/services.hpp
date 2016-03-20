@@ -13,8 +13,9 @@
 // Includes
 // ---
 
-#include "kbdworker.hpp"
 #include "lrcdatahandler.hpp"
+#include "kbdworker.hpp"
+#include "cbdworker.hpp"
 
 #if SERVICE_KEYBOARD_ENABLED
 #include "keyboard.hpp"
@@ -35,6 +36,7 @@ namespace Services
 	{
 		LRCDataHandler::Run();
 		KeyboardWorker::Run();
+		ClipboardWorker::Run();
 
 #if SERVICE_KEYBOARD_ENABLED
 		KeyboardSvc::Run();
@@ -52,8 +54,6 @@ namespace Services
 
 	static void StopAll()
 	{
-		LRCDataHandler::Stop();
-		KeyboardWorker::Stop();
 
 #if SERVICE_KEYBOARD_ENABLED
 		KeyboardSvc::Stop();
@@ -67,5 +67,9 @@ namespace Services
 #if SERVICE_WEBSOCKET_ENABLED
 		WebSocketSvc::Stop();
 #endif
+
+		LRCDataHandler::Stop();
+		KeyboardWorker::Stop();
+		ClipboardWorker::Stop();
 	}
 }

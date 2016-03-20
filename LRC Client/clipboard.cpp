@@ -3,10 +3,14 @@
 #if SERVICE_CLIPBOARD_ENABLED
 
 #include "winfx.hpp"
+#include "tools.hpp"
+#include "lrcdatatypes.hpp"
 
 #include <iostream>
 #include <string>
+#include <queue>
 
+#include <thread>
 #include <atomic>
 #include <mutex>
 
@@ -14,12 +18,44 @@ using namespace Services;
 
 namespace
 {
-	std::atomic_bool isRunning = false;
+	using namespace std;
 
-	std::mutex stateMutex;
+	atomic_bool isRunning = false;
+	mutex stateMutex;
 
-	std::wstring cbdClassName;
+	wstring cbdClassName;
 	HWND hwndClipboard;
+
+	void ProcessClipboard()
+	{
+		BOOL isOpened = OpenClipboard(0);
+
+		if (isOpened == FALSE)
+		{
+			return;
+		}
+
+		BOOL isUnicode = IsClipboardFormatAvailable(CF_UNICODETEXT);
+
+		if (isUnicode == FALSE)
+		{
+			return;
+		}
+
+		HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+		WCHAR* wCbrd = (WCHAR*)GlobalLock(hData);
+
+		LRCData::Clipboard cbd;
+		cbd.wndInfo = tools::GetWNDInfo(GetForegroundWindow());
+		cbd.data = std::wstring(wCbrd);
+		
+		std::cout << "[Clipboard] Copied " << cbd.data.size() << " characters." << std::endl;
+
+		ClipboardWorker::Add(cbd);
+
+		GlobalUnlock(hData);
+		CloseClipboard();
+	}
 
 	LRESULT CALLBACK CbdWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
@@ -32,7 +68,7 @@ namespace
 			PostQuitMessage(0);
 			break;
 		case WM_CLIPBOARDUPDATE:
-			std::cout << "Clipboard text changed." << std::endl;
+			ProcessClipboard();
 			break;
 		default:
 			return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -114,6 +150,12 @@ namespace
 void ClipboardSvc::Run()
 {
 	stateMutex.lock();
+
+	if (isRunning.load())
+	{
+		return;
+	}
+
 	isRunning.store(true);
 
 	bool success = CreateClipboardListener();
@@ -129,6 +171,12 @@ void ClipboardSvc::Run()
 void ClipboardSvc::Stop()
 {
 	stateMutex.lock();
+
+	if (!isRunning.load())
+	{
+		return;
+	}
+
 	isRunning.store(false);
 
 	DestroyClipboardListener();

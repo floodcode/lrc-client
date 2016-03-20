@@ -11,12 +11,17 @@ namespace Settings
 	namespace WebSocketSvc
 	{
 		static string host = "ws://localhost:8080/";
-		static size_t connectionDelay = 5;
+		static size_t connectionDelay = 60;
 	}
 
 	namespace KeyboardSvc
 	{
-		static size_t eventsToProcess = 5;
+		static size_t eventsToProcess = 10;
 		static size_t maxRepeats = 5;
+	}
+
+	namespace ClipboardSvc
+	{
+		static size_t eventsToProcess = 10;
 	}
 }

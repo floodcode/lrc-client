@@ -1,11 +1,10 @@
-#pragma once
 #include "kbdworker.hpp"
 #include "lrcdatahandler.hpp"
-#include "lrcdatawriter.hpp"
 #include "winfx.hpp"
 #include "tools.hpp"
 #include "settings.hpp"
 
+#include <thread>
 #include <mutex>
 #include <atomic>
 #include <chrono>
@@ -39,7 +38,7 @@ namespace
 	std::mutex stateMutex;
 	std::mutex keyBundleQueueMutex;
 
-	std::thread queueWorkerThread;
+	std::thread workerThread;
 
 	size_t kbdVectorCursor;
 
@@ -219,7 +218,7 @@ namespace
 		}
 	}
 
-	void queueWorker()
+	void worker()
 	{
 		while (isRunning.load())
 		{
@@ -240,7 +239,7 @@ namespace
 			}
 			else
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(25));
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			}
 		}
 	}
@@ -258,7 +257,7 @@ void KeyboardWorker::Run()
 	isRunning.store(true);
 
 	init();
-	queueWorkerThread = std::thread(queueWorker);
+	workerThread = std::thread(worker);
 
 	stateMutex.unlock();
 }
@@ -274,7 +273,7 @@ void KeyboardWorker::Stop()
 
 	isRunning.store(false);
 
-	queueWorkerThread.join();
+	workerThread.join();
 
 	stateMutex.unlock();
 }
