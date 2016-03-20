@@ -7,12 +7,12 @@
 #define SERVICE_KEYBOARD_ENABLED	true
 #define SERVICE_MOUSE_ENABLED		true
 #define SERVICE_CLIPBOARD_ENABLED	true
-#define SERVICE_WEBSOCKET_ENABLED	true
 
 // ---
 // Includes
 // ---
 
+#include "websocket.hpp"
 #include "lrcdatahandler.hpp"
 #include "kbdworker.hpp"
 #include "cbdworker.hpp"
@@ -26,14 +26,12 @@
 #if SERVICE_CLIPBOARD_ENABLED
 #include "clipboard.hpp"
 #endif
-#if SERVICE_WEBSOCKET_ENABLED
-#include "websocket.hpp"
-#endif
 
 namespace Services
 {
 	static void RunAll()
 	{
+		WebSocketSvc::Run();
 		LRCDataHandler::Run();
 		KeyboardWorker::Run();
 		ClipboardWorker::Run();
@@ -46,9 +44,6 @@ namespace Services
 #endif
 #if SERVICE_CLIPBOARD_ENABLED
 		ClipboardSvc::Run();
-#endif
-#if SERVICE_WEBSOCKET_ENABLED
-		WebSocketSvc::Run();
 #endif
 	}
 
@@ -64,12 +59,10 @@ namespace Services
 #if SERVICE_CLIPBOARD_ENABLED
 		ClipboardSvc::Stop();
 #endif
-#if SERVICE_WEBSOCKET_ENABLED
-		WebSocketSvc::Stop();
-#endif
 
-		LRCDataHandler::Stop();
 		KeyboardWorker::Stop();
 		ClipboardWorker::Stop();
+		LRCDataHandler::Stop();
+		WebSocketSvc::Stop();
 	}
 }

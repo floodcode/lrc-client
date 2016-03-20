@@ -1,7 +1,5 @@
 #include "services.hpp"
 
-#if SERVICE_WEBSOCKET_ENABLED
-
 #include "winfx.hpp"
 #include "wsclient.hpp"
 #include "settings.hpp"
@@ -147,5 +145,3 @@ bool WebSocketSvc::IsRunning()
 {
 	return isRunning.load();
 }
-
-#endif // SERVICE_WEBSOCKET_ENABLED

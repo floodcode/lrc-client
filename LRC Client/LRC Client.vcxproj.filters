@@ -11,6 +11,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Services\Core">
+      <UniqueIdentifier>{378e3436-6274-444c-8601-518f0ec1e78e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="io.cpp">
@@ -20,9 +23,6 @@
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="keyboard.cpp">
-      <Filter>Services</Filter>
-    </ClCompile>
-    <ClCompile Include="websocket.cpp">
       <Filter>Services</Filter>
     </ClCompile>
     <ClCompile Include="clipboard.cpp">
@@ -38,12 +38,6 @@
       <Filter>Libraries</Filter>
     </ClCompile>
     <ClCompile Include="LRC.cpp" />
-    <ClCompile Include="kbdworker.cpp">
-      <Filter>Services</Filter>
-    </ClCompile>
-    <ClCompile Include="lrcdatahandler.cpp">
-      <Filter>Services</Filter>
-    </ClCompile>
     <ClCompile Include="hwinfo.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
@@ -51,14 +45,20 @@
       <Filter>Libraries</Filter>
     </ClCompile>
     <ClCompile Include="cbdworker.cpp">
-      <Filter>Services</Filter>
+      <Filter>Services\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="kbdworker.cpp">
+      <Filter>Services\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="lrcdatahandler.cpp">
+      <Filter>Services\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="websocket.cpp">
+      <Filter>Services\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="keyboard.hpp">
-      <Filter>Services</Filter>
-    </ClInclude>
-    <ClInclude Include="websocket.hpp">
       <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="clipboard.hpp">
@@ -91,12 +91,6 @@
     <ClInclude Include="settings.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="kbdworker.hpp">
-      <Filter>Services</Filter>
-    </ClInclude>
-    <ClInclude Include="lrcdatahandler.hpp">
-      <Filter>Services</Filter>
-    </ClInclude>
     <ClInclude Include="hwinfo.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -104,7 +98,16 @@
       <Filter>Libraries</Filter>
     </ClInclude>
     <ClInclude Include="cbdworker.hpp">
-      <Filter>Services</Filter>
+      <Filter>Services\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="kbdworker.hpp">
+      <Filter>Services\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="lrcdatahandler.hpp">
+      <Filter>Services\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="websocket.hpp">
+      <Filter>Services\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

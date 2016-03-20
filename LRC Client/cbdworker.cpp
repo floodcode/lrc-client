@@ -33,6 +33,11 @@ namespace
 	void init()
 	{
 		cbdVector.clear();
+		lastClipboard.data = L"";
+		lastClipboard.wndInfo.process = L"";
+		lastClipboard.wndInfo.title = L"";
+		lastClipboard.wndInfo.time = 0;
+
 	}
 
 	void saveData()
@@ -51,6 +56,7 @@ namespace
 		}
 
 		cbdVector.push_back(cbd);
+		lastClipboard = cbd;
 
 		if (cbdVector.size() == Settings::ClipboardSvc::eventsToProcess)
 		{

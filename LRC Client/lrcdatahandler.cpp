@@ -44,18 +44,18 @@ namespace
 
 				if (output.is_open())
 				{
-					output.write((const char*)data.data(), data.size());
+					output.write(reinterpret_cast<const char*>(data.data()), data.size());
 					output.close();
 				}
 				
-				// Send data
+				// Send data to server
 				std::cout << "[WebSocket] Sending data (" << data.size() << " bytes)" << std::endl;
 				bool isDataSent = WebSocketSvc::Send(data);
 				std::cout << "[WebSocket] " << (isDataSent ? "Data was successfully sent" : "Data wasn't sent") << std::endl;
 
 				if (!isDataSent)
 				{
-					// Cache file
+					// Cache file if data wasn't sent
 				}
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -108,6 +108,11 @@ bool LRCDataHandler::IsRunning()
 
 void LRCDataHandler::Process(ByteVector data)
 {
+	if (!isRunning.load())
+	{
+		return;
+	}
+
 	dataQueueMutex.lock();
 	dataQueue.push(data);
 	dataQueueMutex.unlock();
