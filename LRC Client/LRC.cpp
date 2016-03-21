@@ -1,6 +1,7 @@
 #include "services.hpp"
 #include "winfx.hpp"
 #include <cstring>
+#include <fstream>
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
@@ -11,13 +12,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 #pragma comment(linker, "/SUBSYSTEM:console /ENTRY:mainCRTStartup")
 int main()
 {
-	/*
-	using namespace std;
-	string input;
-	cout << "Enter sha256ID: ";
-	cin >> input;
-	Settings::sha256ID = input;
-	*/
 	return WinMain(0, 0, 0, 0);
 }
 #endif
@@ -38,6 +32,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	CreateEventW(NULL, FALSE, FALSE, L"12da89fa-068b-410d-bc86-9881394bc74f");
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{
+#if _DEBUG
+		MessageBoxW(NULL, L"LRC is already running", L"Error", MB_OK);
+#endif
 		return 0;
 	}
 

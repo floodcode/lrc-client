@@ -26,7 +26,7 @@ namespace
 	wstring cbdClassName;
 	HWND hwndClipboard;
 
-	void ProcessClipboard()
+	void SaveClipboard()
 	{
 		BOOL isOpened = OpenClipboard(0);
 
@@ -39,11 +39,21 @@ namespace
 
 		if (isUnicode == FALSE)
 		{
+			CloseClipboard();
 			return;
 		}
 
 		HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+
+		if (hData == NULL)
+		{
+			CloseClipboard();
+			return;
+		}
+
 		WCHAR* wCbrd = (WCHAR*)GlobalLock(hData);
+
+		CloseClipboard();
 
 		LRCData::Clipboard cbd;
 		cbd.wndInfo = tools::GetWNDInfo(GetForegroundWindow());
@@ -52,9 +62,6 @@ namespace
 		std::cout << "[Clipboard] Copied " << cbd.data.size() << " characters." << std::endl;
 
 		ClipboardWorker::Add(cbd);
-
-		GlobalUnlock(hData);
-		CloseClipboard();
 	}
 
 	LRESULT CALLBACK CbdWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -68,7 +75,7 @@ namespace
 			PostQuitMessage(0);
 			break;
 		case WM_CLIPBOARDUPDATE:
-			ProcessClipboard();
+			SaveClipboard();
 			break;
 		default:
 			return DefWindowProc(hwnd, msg, wParam, lParam);

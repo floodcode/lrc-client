@@ -82,7 +82,7 @@ namespace
 	{
 		while (isRunning.load())
 		{
-			isConnected = tryconnect();
+			isConnected.store(tryconnect());
 			if (isConnected)
 			{
 				while (ws->getReadyState() != WebSocketClient::CLOSED)
@@ -91,7 +91,7 @@ namespace
 					ws->dispatch(handlemessage);
 				}
 				delete ws;
-				isConnected = false;
+				isConnected.store(false);
 			}
 			else
 			{
@@ -136,12 +136,17 @@ void WebSocketSvc::Stop()
 	stateMutex.unlock();
 }
 
-bool WebSocketSvc::Send(std::vector<uint8_t> data)
-{
-	return sendBinary(data);
-}
-
 bool WebSocketSvc::IsRunning()
 {
 	return isRunning.load();
+}
+
+bool WebSocketSvc::IsConnected()
+{
+	return isConnected.load();
+}
+
+bool WebSocketSvc::Send(std::vector<uint8_t> data)
+{
+	return sendBinary(data);
 }

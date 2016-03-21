@@ -1,28 +1,74 @@
 #include "lrcdatahandler.hpp"
 #include "websocket.hpp"
+#include "settings.hpp"
+#include "io.hpp"
 
 #include <atomic>
-#include <mutex>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
-#include <queue>
-#include <fstream>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+#include <queue>
+#include <random>
+#include <map>
 
 using namespace Services;
 using namespace LRCData;
 
 namespace
 {
-	std::atomic_bool isRunning = false;
+	using namespace std;
 
-	std::thread workerThread;
+	atomic_bool isRunning = false;
 
-	std::mutex stateMutex;
-	std::mutex dataQueueMutex;
+	thread workerThread;
 
-	std::queue<ByteVector> dataQueue;
+	mutex stateMutex;
+	mutex dataQueueMutex;
+
+	queue<ByteVector> dataQueue;
+
+	uniform_int_distribution<uint32_t> tokenDistribution(1000, 9999);
+	default_random_engine tokenGenerator;
+
+	struct CacheBuffer
+	{
+		uint32_t token;
+		time_t time;
+		ByteVector data;
+	};
+
+	vector<CacheBuffer> cacheRead()
+	{
+		return vector<CacheBuffer>();
+	}
+
+	void cacheAdd(ByteVector data)
+	{
+		bool folderExist = io::directory::create(Settings::cacheDirectory);
+
+		if (!folderExist)
+		{
+			return;
+		}
+
+		time_t currentTime = time(0);
+		uint32_t token = tokenDistribution(tokenGenerator);
+
+		stringstream cacheFilename;
+		cacheFilename << Settings::cacheDirectory << "\\" << currentTime << "-" << token << ".bin";
+
+		ofstream binaryOutput(cacheFilename.str(), ios::binary | ios::trunc);
+		if (binaryOutput.is_open())
+		{
+			binaryOutput.write(reinterpret_cast<char *>(data.data()), data.size());
+			binaryOutput.close();
+		}
+	}
 
 	void worker()
 	{
@@ -39,23 +85,18 @@ namespace
 				dataQueue.pop();
 				dataQueueMutex.unlock();
 
-				// Dump data
-				std::ofstream output("dump.bin", std::ios::trunc | std::ios::out | std::ios::binary);
-
-				if (output.is_open())
-				{
-					output.write(reinterpret_cast<const char*>(data.data()), data.size());
-					output.close();
-				}
+				bool isDataSent = false;
 				
-				// Send data to server
-				std::cout << "[WebSocket] Sending data (" << data.size() << " bytes)" << std::endl;
-				bool isDataSent = WebSocketSvc::Send(data);
-				std::cout << "[WebSocket] " << (isDataSent ? "Data was successfully sent" : "Data wasn't sent") << std::endl;
+				if (WebSocketSvc::IsConnected())
+				{
+					// Send data to server
+					isDataSent = WebSocketSvc::Send(data);
+				}
 
 				if (!isDataSent)
 				{
-					// Cache file if data wasn't sent
+					// Cache data if wasn't sent
+					cacheAdd(data);
 				}
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));

@@ -2,6 +2,7 @@
 #include "winfx.hpp"
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace io
 {
@@ -9,5 +10,10 @@ namespace io
 	{
 		bool exist(std::string path);
 		bool create(std::string path);
+	}
+
+	namespace file
+	{
+		std::vector<std::wstring> list(std::wstring directory);
 	}
 }
