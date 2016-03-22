@@ -148,5 +148,12 @@ bool WebSocketSvc::IsConnected()
 
 bool WebSocketSvc::Send(std::vector<uint8_t> data)
 {
-	return sendBinary(data);
+	bool isSent = sendBinary(data);
+
+	if (isSent)
+	{
+		std::cout << "[WebSocket] Data was sent (" << data.size() << " bytes)" << std::endl;
+	}
+
+	return isSent;
 }

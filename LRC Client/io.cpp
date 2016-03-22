@@ -28,6 +28,24 @@ namespace io
 		return true;
 	}
 
+	bool directory::create(std::wstring path)
+	{
+		BOOL res = CreateDirectoryW(path.c_str(), NULL);
+
+		if (res == NULL)
+		{
+			DWORD err = GetLastError();
+			if (err == ERROR_ALREADY_EXISTS)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
 	std::vector<std::wstring> file::list(std::wstring directory)
 	{
 		WIN32_FIND_DATAW ffd;
@@ -67,5 +85,18 @@ namespace io
 
 		FindClose(hFind);
 		return result;
+	}
+
+
+	bool file::remove(std::wstring filename)
+	{
+		BOOL result = DeleteFileW(filename.c_str());
+
+		if (result == FALSE)
+		{
+			return false;
+		}
+		
+		return true;
 	}
 }

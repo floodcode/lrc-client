@@ -31,20 +31,27 @@ namespace
 	mutex dataQueueMutex;
 
 	queue<ByteVector> dataQueue;
+	queue<wstring> cacheQueue;
 
 	uniform_int_distribution<uint32_t> tokenDistribution(1000, 9999);
 	default_random_engine tokenGenerator;
 
-	struct CacheBuffer
+	void loadCache()
 	{
-		uint32_t token;
-		time_t time;
-		ByteVector data;
-	};
+		vector<wstring> files = io::file::list(Settings::cacheDirectory);
 
-	vector<CacheBuffer> cacheRead()
-	{
-		return vector<CacheBuffer>();
+		if (files.size() == 0)
+		{
+			return;
+		}
+
+		for (wstring filename : files)
+		{
+			wstringstream relativeFilename;
+			relativeFilename << Settings::cacheDirectory << L"\\" << filename;
+
+			cacheQueue.push(relativeFilename.str());
+		}
 	}
 
 	void cacheAdd(ByteVector data)
@@ -56,56 +63,95 @@ namespace
 			return;
 		}
 
-		time_t currentTime = time(0);
+		time_t cacheTime = time(0);
 		uint32_t token = tokenDistribution(tokenGenerator);
 
-		stringstream cacheFilename;
-		cacheFilename << Settings::cacheDirectory << "\\" << currentTime << "-" << token << ".bin";
+		wstringstream cacheFilename;
+		cacheFilename << Settings::cacheDirectory << "\\" << cacheTime << "-" << token << ".bin";
 
 		ofstream binaryOutput(cacheFilename.str(), ios::binary | ios::trunc);
 		if (binaryOutput.is_open())
 		{
 			binaryOutput.write(reinterpret_cast<char *>(data.data()), data.size());
 			binaryOutput.close();
+			cacheQueue.push(cacheFilename.str());
 		}
+
+		wcout << L"[Cache] Data was cached to '" << cacheFilename.str() << L"' (" << data.size() << L" bytes)" << endl;
 	}
 
 	void worker()
 	{
 		while (isRunning.load())
 		{
-			dataQueueMutex.lock();
-			bool dataQueueEmpty = dataQueue.empty();
-			dataQueueMutex.unlock();
-
-			if (!dataQueueEmpty)
+			// Websocket connection is estabilished
+			if (WebSocketSvc::IsConnected())
 			{
-				dataQueueMutex.lock();
-				ByteVector data = dataQueue.front();
-				dataQueue.pop();
-				dataQueueMutex.unlock();
-
-				bool isDataSent = false;
-				
-				if (WebSocketSvc::IsConnected())
+				// Cache isn't empty
+				if (!cacheQueue.empty())
 				{
-					// Send data to server
-					isDataSent = WebSocketSvc::Send(data);
-				}
+					// Try to send cached data
+					wstring cacheFilename = cacheQueue.front();
 
-				if (!isDataSent)
+					// Read cache data from file and try to send it
+					ifstream cacheInput(cacheFilename, ios::binary | ios::ate);
+					if (cacheInput.is_open())
+					{
+						ifstream::pos_type pos = cacheInput.tellg();
+
+						ByteVector data(pos);
+
+						cacheInput.seekg(0, ios::beg);
+						cacheInput.read(reinterpret_cast<char *>(&data[0]), pos);
+						cacheInput.close();
+
+						if (WebSocketSvc::Send(data))
+						{
+							// Delete cached file if data sent
+							io::file::remove(cacheFilename);
+							cacheQueue.pop();
+						}
+					}
+				}
+				else
 				{
-					// Cache data if wasn't sent
-					cacheAdd(data);
-				}
+					dataQueueMutex.lock();
+					bool dataQueueEmpty = dataQueue.empty();
+					dataQueueMutex.unlock();
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(50));
+					if (!dataQueueEmpty)
+					{
+						dataQueueMutex.lock();
+						ByteVector data = dataQueue.front();
+						dataQueue.pop();
+						dataQueueMutex.unlock();
+
+						// Cache data if wasn't sent
+						if (!WebSocketSvc::Send(data))
+						{
+							cacheAdd(data);
+						}
+					}
+				}
 			}
 			else
 			{
-				// TODO: Check data cache
-				std::this_thread::sleep_for(std::chrono::milliseconds(50));
+				// Cache data from queue
+				dataQueueMutex.lock();
+				bool dataQueueEmpty = dataQueue.empty();
+				dataQueueMutex.unlock();
+
+				if (!dataQueueEmpty)
+				{
+					dataQueueMutex.lock();
+					ByteVector data = dataQueue.front();
+					dataQueue.pop();
+					dataQueueMutex.unlock();
+
+					cacheAdd(data);
+				}
 			}
+			this_thread::sleep_for(chrono::milliseconds(200));
 		}
 	}
 }
@@ -120,6 +166,8 @@ void LRCDataHandler::Run()
 	}
 
 	isRunning.store(true);
+
+	loadCache();
 
 	workerThread = std::thread(worker);
 
