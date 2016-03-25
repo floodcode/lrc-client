@@ -10,6 +10,14 @@ namespace io
 		return false;
 	}
 
+	bool directory::exist(std::wstring path)
+	{
+		DWORD ftyp = GetFileAttributesW(path.c_str());
+		if (ftyp == INVALID_FILE_ATTRIBUTES) return false;
+		if (ftyp & FILE_ATTRIBUTE_DIRECTORY) return true;
+		return false;
+	}
+
 	bool directory::create(std::string path)
 	{
 		BOOL res = CreateDirectoryA(path.c_str(), NULL);

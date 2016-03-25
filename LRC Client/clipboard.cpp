@@ -2,12 +2,13 @@
 
 #if SERVICE_CLIPBOARD_ENABLED
 
+#include "log.hpp"
 #include "winfx.hpp"
 #include "tools.hpp"
 #include "lrcdatatypes.hpp"
 
-#include <iostream>
 #include <string>
+#include <sstream>
 #include <queue>
 
 #include <thread>
@@ -28,7 +29,7 @@ namespace
 
 	void SaveClipboard()
 	{
-		BOOL isOpened = OpenClipboard(0);
+		BOOL isOpened = OpenClipboard(NULL);
 
 		if (isOpened == FALSE)
 		{
@@ -51,7 +52,8 @@ namespace
 			return;
 		}
 
-		WCHAR* wCbrd = (WCHAR*)GlobalLock(hData);
+		WCHAR* wCbrd = static_cast<WCHAR *>(GlobalLock(hData));
+		GlobalUnlock(hData);
 
 		CloseClipboard();
 
@@ -59,28 +61,21 @@ namespace
 		cbd.wndInfo = tools::GetWNDInfo(GetForegroundWindow());
 		cbd.data = std::wstring(wCbrd);
 		
-		std::cout << "[Clipboard] Copied " << cbd.data.size() << " characters." << std::endl;
+		stringstream logMessage;
+		logMessage << "[Clipboard] Copied " << cbd.data.size() << " characters.";
+		Log::Info(logMessage.str());
 
 		ClipboardWorker::Add(cbd);
 	}
 
 	LRESULT CALLBACK CbdWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		switch (msg)
+		if (msg == WM_CLIPBOARDUPDATE)
 		{
-		case WM_CLOSE:
-			DestroyWindow(hwnd);
-			break;
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-		case WM_CLIPBOARDUPDATE:
 			SaveClipboard();
-			break;
-		default:
-			return DefWindowProc(hwnd, msg, wParam, lParam);
 		}
-		return 0;
+
+		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 
 	bool CreateClipboardListener()
@@ -130,6 +125,7 @@ namespace
 
 		// Adding clipboard listener
 		BOOL res = AddClipboardFormatListener(hwndClipboard);
+
 		if (res == FALSE)
 		{
 			DestroyWindow(hwndClipboard);

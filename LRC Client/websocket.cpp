@@ -3,32 +3,34 @@
 #include "winfx.hpp"
 #include "wsclient.hpp"
 #include "settings.hpp"
+#include "log.hpp"
 
 #include <thread>
 #include <mutex>
 #include <atomic>
 
-#include <iostream>
+#include <sstream>
 
+using namespace std;
 using namespace Services;
 using wsclient::WebSocketClient;
 
 namespace
 {
-	std::atomic_bool isRunning = false;
-	std::atomic_bool isConnected = false;
+	atomic_bool isRunning = false;
+	atomic_bool isConnected = false;
 
 	INT rc;
 	WSADATA wsaData;
 	WebSocketClient::pointer ws = NULL;
 
-	std::thread wsWorkerThread;
+	thread wsWorkerThread;
 
-	std::mutex stateMutex;
-	std::mutex wsSendMutex;
+	mutex stateMutex;
+	mutex wsSendMutex;
 
 	// Thread-safely send text messasge to WebSocket server
-	bool send(const std::string &message)
+	bool send(const string &message)
 	{
 		bool isSent = false;
 		wsSendMutex.lock();
@@ -42,7 +44,7 @@ namespace
 	}
 
 	// Thread-safely send binary message to WebSocket server
-	bool sendBinary(std::vector<byte> message)
+	bool sendBinary(vector<byte> message)
 	{
 		bool isSent = false;
 		wsSendMutex.lock();
@@ -63,17 +65,33 @@ namespace
 	}
 
 	// Receiving incoming messages
-	void handlemessage(const std::string &message)
+	void handlemessage(const string &message)
 	{
-		std::cout << "[WerSocket][Server]: " << message << std::endl;
+		stringstream logMessage;
+		logMessage << "[WebSocket] Server: " << message;
+		Log::Info(logMessage.str());
 	}
 
 	// Try connect to WebSocket server
 	bool tryconnect()
 	{
+		Log::Info("[WebSocket] Connecting to server");
+
 		wsSendMutex.lock();
 		ws = WebSocketClient::from_url(Settings::WebSocketSvc::host);
 		wsSendMutex.unlock();
+
+		if (ws != NULL)
+		{
+			Log::Info("[WebSocket] Successfully connected to server");
+			return true;
+		}
+		else
+		{
+			Log::Info("[WebSocket] Server unavailable");
+			return false;
+		}
+
 		return ws != NULL;
 	}
 
@@ -114,7 +132,7 @@ void WebSocketSvc::Run()
 
 	rc = WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	wsWorkerThread = std::thread(worker);
+	wsWorkerThread = thread(worker);
 
 	stateMutex.unlock();
 }
@@ -152,7 +170,9 @@ bool WebSocketSvc::Send(std::vector<uint8_t> data)
 
 	if (isSent)
 	{
-		std::cout << "[WebSocket] Data was sent (" << data.size() << " bytes)" << std::endl;
+		stringstream logMessage;
+		logMessage << "[WebSocket] Data was sent (" << data.size() << " bytes)";
+		Log::Info(logMessage.str());
 	}
 
 	return isSent;

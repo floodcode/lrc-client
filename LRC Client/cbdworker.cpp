@@ -48,7 +48,7 @@ namespace
 		init();
 	}
 
-	void processClipboard(Clipboard cbd)
+	void processClipboard(const Clipboard &cbd)
 	{
 		if (lastClipboard.data == cbd.data)
 		{

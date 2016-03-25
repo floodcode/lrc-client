@@ -9,6 +9,12 @@ namespace Settings
 
 	static string sha256ID = "fe6340be87fd5e43b7f0cac5741e76205dd69a68b2024fda16c696848a720f7a";
 	static wstring cacheDirectory = L"cache";
+	
+	namespace Log
+	{
+		static wstring directory = L"logs";
+		static wstring filename = L"logs.txt";
+	}
 
 	namespace ServiceState
 	{
@@ -20,7 +26,7 @@ namespace Settings
 	namespace WebSocketSvc
 	{
 		static string host = "ws://localhost:8080/";
-		static size_t connectionDelay = 10;
+		static size_t connectionDelay = 120;
 	}
 
 	namespace KeyboardSvc

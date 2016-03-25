@@ -2,13 +2,13 @@
 #include "websocket.hpp"
 #include "settings.hpp"
 #include "io.hpp"
+#include "log.hpp"
 
 #include <atomic>
 #include <thread>
 #include <chrono>
 #include <mutex>
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <ctime>
@@ -77,7 +77,10 @@ namespace
 			cacheQueue.push(cacheFilename.str());
 		}
 
-		wcout << L"[Cache] Data was cached to '" << cacheFilename.str() << L"' (" << data.size() << L" bytes)" << endl;
+		wstringstream logMessage;
+		logMessage << L"[Cache] Data was cached to '" << cacheFilename.str() << L"' (" << data.size() << L" bytes)";
+		Log::Info(logMessage.str());
+
 	}
 
 	void worker()

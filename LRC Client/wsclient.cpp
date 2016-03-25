@@ -486,11 +486,11 @@ namespace
 			fprintf(stderr, "ERROR: Could not parse WebSocket url: %s\n", url.c_str());
 			return NULL;
 		}
-		fprintf(stderr, "[WebSocket] Connecting to host=%s port=%d path=/%s\n", host, port, path);
+		// fprintf(stderr, "[WebSocket] Connecting to host=%s port=%d path=/%s\n", host, port, path);
 		socket_t sockfd = hostname_connect(host, port);
 		if (sockfd == INVALID_SOCKET)
 		{
-			fprintf(stderr, "[WebSocket] Unable to connect to %s:%d\n", host, port);
+			// fprintf(stderr, "[WebSocket] Unable to connect to %s:%d\n", host, port);
 			return NULL;
 		}
 		{
@@ -551,7 +551,7 @@ namespace
 		setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)); // Disable Nagle's algorithm
 		u_long on = 1;
 		ioctlsocket(sockfd, FIONBIO, &on);
-		fprintf(stderr, "[WebSocket] Connected to %s\n", url.c_str());
+		// fprintf(stderr, "[WebSocket] Connected to %s\n", url.c_str());
 		return wsclient::WebSocketClient::pointer(new _RealWebSocket(sockfd, useMask));
 	}
 

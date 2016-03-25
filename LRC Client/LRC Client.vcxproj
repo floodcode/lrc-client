@@ -149,6 +149,7 @@
     <ClCompile Include="io.cpp" />
     <ClCompile Include="kbdworker.cpp" />
     <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="LRC.cpp" />
     <ClCompile Include="lrcdatahandler.cpp" />
     <ClCompile Include="lrcdatawriter.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="hwinfo.hpp" />
     <ClInclude Include="io.hpp" />
     <ClInclude Include="kbdworker.hpp" />
+    <ClInclude Include="log.hpp" />
     <ClInclude Include="lrcdatahandler.hpp" />
     <ClInclude Include="lrcdatatypes.hpp" />
     <ClInclude Include="lrcdatawriter.hpp" />

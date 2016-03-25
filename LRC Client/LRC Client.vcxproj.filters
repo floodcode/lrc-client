@@ -11,7 +11,10 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Services\Core">
+    <Filter Include="Core">
+      <UniqueIdentifier>{a78bfaaf-3b29-4031-93dd-220767315471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\Main">
       <UniqueIdentifier>{378e3436-6274-444c-8601-518f0ec1e78e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -45,16 +48,19 @@
       <Filter>Libraries</Filter>
     </ClCompile>
     <ClCompile Include="cbdworker.cpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
     </ClCompile>
     <ClCompile Include="kbdworker.cpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
     </ClCompile>
     <ClCompile Include="lrcdatahandler.cpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
     </ClCompile>
     <ClCompile Include="websocket.cpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,9 +74,6 @@
       <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="io.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="services.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="tools.hpp">
@@ -88,9 +91,6 @@
     <ClInclude Include="wsclient.hpp">
       <Filter>Libraries</Filter>
     </ClInclude>
-    <ClInclude Include="settings.hpp">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="hwinfo.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -98,16 +98,25 @@
       <Filter>Libraries</Filter>
     </ClInclude>
     <ClInclude Include="cbdworker.hpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
     </ClInclude>
     <ClInclude Include="kbdworker.hpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
     </ClInclude>
     <ClInclude Include="lrcdatahandler.hpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
     </ClInclude>
     <ClInclude Include="websocket.hpp">
-      <Filter>Services\Core</Filter>
+      <Filter>Services\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="services.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="log.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
