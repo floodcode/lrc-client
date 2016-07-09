@@ -18,5 +18,6 @@ namespace io
 	{
 		std::vector<std::wstring> list(std::wstring directory);
 		bool remove(std::wstring filename);
+		bool exist(std::string filename);
 	}
 }

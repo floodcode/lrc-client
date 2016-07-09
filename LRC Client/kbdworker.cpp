@@ -49,7 +49,7 @@ namespace
 
 	VKInfo lastVKInfo;
 
-	LRCDataWriter writer(Settings::sha256ID);
+	LRCDataWriter writer("fe6340be87fd5e43b7f0cac5741e76205dd69a68b2024fda16c696848a720f7a");
 
 	// Compares two VKInfo structures
 	inline bool VKInfoCmp(const VKInfo &vk1, const VKInfo &vk2)

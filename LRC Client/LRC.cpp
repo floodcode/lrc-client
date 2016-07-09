@@ -1,7 +1,11 @@
 #include "services.hpp"
 #include "winfx.hpp"
+#include "settings.hpp"
+#include "io.hpp"
+
 #include <cstring>
 #include <fstream>
+#include <streambuf>
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 

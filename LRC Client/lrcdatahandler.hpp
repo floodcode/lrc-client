@@ -10,5 +10,7 @@ namespace Services
 		bool IsRunning();
 
 		void Process(LRCData::ByteVector data);
+		void HandleMessage(const std::string &message);
+		void SetDisconnected();
 	}
 }

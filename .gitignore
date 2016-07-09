@@ -236,3 +236,5 @@ _Pvt_Extensions
 .fake/
 
 *.txt
+/LRC Client/cfg/uid
+/LRC Client.VC.db

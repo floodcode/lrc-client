@@ -10,6 +10,7 @@
 #include <mutex>
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <ctime>
 #include <queue>
@@ -24,6 +25,7 @@ namespace
 	using namespace std;
 
 	atomic_bool isRunning = false;
+	atomic_bool isUIDSent = false;
 
 	thread workerThread;
 
@@ -83,6 +85,22 @@ namespace
 
 	}
 
+	bool getUID()
+	{
+		return WebSocketSvc::Send("{\"name\":\"get-uid\", \"data\":\"\"}");
+	}
+
+	bool sendUID()
+	{
+		stringstream json;
+		Settings::mtx.lock();
+		json << "{\"name\":\"set-uid\", \"data\":\"" << Settings::UID << "\"}";
+		Settings::mtx.unlock();
+		bool isSent = WebSocketSvc::Send(json.str());
+		isUIDSent.store(isSent);
+		return isSent;
+	}
+
 	void worker()
 	{
 		while (isRunning.load())
@@ -90,6 +108,27 @@ namespace
 			// Websocket connection is estabilished
 			if (WebSocketSvc::IsConnected())
 			{
+				// Send UID if it isn't sent
+				if (!isUIDSent.load())
+				{
+					Settings::mtx.lock();
+					bool uidSet = (Settings::UID.length() == 64);
+					Settings::mtx.unlock();
+
+
+					if (uidSet)
+					{
+						sendUID();
+					}
+					else
+					{
+						getUID();
+					}
+
+					this_thread::sleep_for(chrono::milliseconds(200));
+					continue;
+				}
+
 				// Cache isn't empty
 				if (!cacheQueue.empty())
 				{
@@ -159,6 +198,34 @@ namespace
 	}
 }
 
+void bootstrap()
+{
+	if (!io::directory::exist("cfg"))
+	{
+		io::directory::create("cfg");
+	}
+	else
+	{
+		if (io::file::exist("cfg\\uid"))
+		{
+			std::ifstream input("cfg\\uid");
+			if (input.is_open())
+			{
+				std::stringstream buffer;
+				buffer << input.rdbuf();
+				input.close();
+
+				if (buffer.str().length() == 64)
+				{
+					Settings::mtx.lock();
+					Settings::UID = buffer.str();
+					Settings::mtx.unlock();
+				}
+			}
+		}
+	}
+}
+
 void LRCDataHandler::Run()
 {
 	stateMutex.lock();
@@ -170,6 +237,7 @@ void LRCDataHandler::Run()
 
 	isRunning.store(true);
 
+	bootstrap();
 	loadCache();
 
 	workerThread = std::thread(worker);
@@ -208,4 +276,48 @@ void LRCDataHandler::Process(ByteVector data)
 	dataQueueMutex.lock();
 	dataQueue.push(data);
 	dataQueueMutex.unlock();
+}
+
+
+void LRCDataHandler::HandleMessage(const string &message)
+{
+	stringstream logMessage;
+	logMessage << "[WebSocket] Server: " << message;
+	Log::Info(logMessage.str());
+
+	string::size_type loc = message.find(":", 0);
+	if (loc == string::npos)
+	{
+		return;
+	}
+
+	string cmd = message.substr(0, loc);
+	string req = message.substr(loc + 1, message.length() - loc);
+
+	if (cmd == "uid")
+	{
+		Settings::mtx.lock();
+		Settings::UID = req;
+		Settings::mtx.unlock();
+
+		if (!io::directory::exist("cfg"))
+		{
+			io::directory::create("cfg");
+		}
+		else
+		{
+			std::ofstream output("cfg\\uid", ios::trunc);
+			if (output.is_open())
+			{
+				output << req;
+				output.close();
+			}
+		}
+	}
+}
+
+
+void LRCDataHandler::SetDisconnected()
+{
+	isUIDSent.store(false);
 }

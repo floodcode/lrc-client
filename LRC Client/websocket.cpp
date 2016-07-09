@@ -4,10 +4,12 @@
 #include "wsclient.hpp"
 #include "settings.hpp"
 #include "log.hpp"
+#include "io.hpp"
 
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <iostream>
 
 #include <sstream>
 
@@ -19,6 +21,7 @@ namespace
 {
 	atomic_bool isRunning = false;
 	atomic_bool isConnected = false;
+	atomic_bool isUIDSent = false;
 
 	INT rc;
 	WSADATA wsaData;
@@ -34,11 +37,20 @@ namespace
 	{
 		bool isSent = false;
 		wsSendMutex.lock();
-		if (isConnected.load() && ws->getReadyState() == WebSocketClient::OPEN)
+
+		try
 		{
-			ws->send(message);
-			isSent = true;
+			if (ws != NULL && ws->getReadyState() == WebSocketClient::OPEN)
+			{
+				ws->send(message);
+				isSent = true;
+			}
 		}
+		catch (...)
+		{
+			return false;
+		}
+
 		wsSendMutex.unlock();
 		return isSent;
 	}
@@ -48,6 +60,7 @@ namespace
 	{
 		bool isSent = false;
 		wsSendMutex.lock();
+
 		try
 		{
 			if (ws != NULL && ws->getReadyState() == WebSocketClient::OPEN)
@@ -60,16 +73,15 @@ namespace
 		{
 			return false;
 		}
+
 		wsSendMutex.unlock();
 		return isSent;
 	}
 
 	// Receiving incoming messages
-	void handlemessage(const string &message)
+	void handlemessage(const std::string &message)
 	{
-		stringstream logMessage;
-		logMessage << "[WebSocket] Server: " << message;
-		Log::Info(logMessage.str());
+		Services::LRCDataHandler::HandleMessage(message);
 	}
 
 	// Try connect to WebSocket server
@@ -101,18 +113,20 @@ namespace
 		while (isRunning.load())
 		{
 			isConnected.store(tryconnect());
-			if (isConnected)
+			if (isConnected.load())
 			{
 				while (ws->getReadyState() != WebSocketClient::CLOSED)
 				{
-					ws->poll(100);
+					ws->poll(200);
 					ws->dispatch(handlemessage);
 				}
+				LRCDataHandler::SetDisconnected();
 				delete ws;
 				isConnected.store(false);
 			}
 			else
 			{
+				LRCDataHandler::SetDisconnected();
 				Sleep(1000 * Settings::WebSocketSvc::connectionDelay);
 			}
 		}
@@ -164,6 +178,20 @@ bool WebSocketSvc::IsConnected()
 	return isConnected.load();
 }
 
+bool WebSocketSvc::Send(std::string data)
+{
+	bool isSent = send(data);
+
+	if (isSent)
+	{
+		stringstream logMessage;
+		logMessage << "[WebSocket] Text data was sent (" << data.size() << " bytes)";
+		Log::Info(logMessage.str());
+	}
+
+	return isSent;
+}
+
 bool WebSocketSvc::Send(std::vector<uint8_t> data)
 {
 	bool isSent = sendBinary(data);
@@ -171,7 +199,7 @@ bool WebSocketSvc::Send(std::vector<uint8_t> data)
 	if (isSent)
 	{
 		stringstream logMessage;
-		logMessage << "[WebSocket] Data was sent (" << data.size() << " bytes)";
+		logMessage << "[WebSocket] Binary data was sent (" << data.size() << " bytes)";
 		Log::Info(logMessage.str());
 	}
 

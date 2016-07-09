@@ -107,4 +107,10 @@ namespace io
 		
 		return true;
 	}
+
+	bool file::exist(std::string filename)
+	{
+		std::ifstream infile(filename);
+		return infile.good();
+	}
 }

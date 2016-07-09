@@ -9,8 +9,9 @@ namespace Services
 		void Run();
 		void Stop();
 		bool IsRunning();
-		
 		bool IsConnected();
+
+		bool Send(std::string data);
 		bool Send(std::vector<uint8_t> data);
 	}
 }
